@@ -216,7 +216,7 @@ class ZCodeLexer(Lexer):
     STRING_EQ = 34
     PLUS = 35
     MINUS = 36
-    MULT = 37
+    MUL = 37
     DIV = 38
     MOD = 39
     GT = 40
@@ -249,7 +249,7 @@ class ZCodeLexer(Lexer):
             "DYNAMIC", "FUNC", "FOR", "UNTIL", "BY", "BREAK", "CONTINUE", 
             "IF", "ELSE", "ELIF", "BEGIN", "END", "NOT", "AND", "OR", "NEWLINE", 
             "LP", "RP", "LB", "RB", "COMMA", "ASSIGN", "NEQ", "GTEQ", "LTEQ", 
-            "CONCAT", "STRING_EQ", "PLUS", "MINUS", "MULT", "DIV", "MOD", 
+            "CONCAT", "STRING_EQ", "PLUS", "MINUS", "MUL", "DIV", "MOD", 
             "GT", "LT", "NUMBER_EQ", "COMMENT", "NUMBER_L", "BOOL_L", "STRING_L", 
             "IDENTIFIERS", "WHITESPACES", "ERROR_CHAR", "UNCLOSE_STRING", 
             "ILLEGAL_ESCAPE" ]
@@ -259,7 +259,7 @@ class ZCodeLexer(Lexer):
                   "BREAK", "CONTINUE", "IF", "ELSE", "ELIF", "BEGIN", "END", 
                   "NOT", "AND", "OR", "NEWLINE", "LP", "RP", "LB", "RB", 
                   "COMMA", "ASSIGN", "NEQ", "GTEQ", "LTEQ", "CONCAT", "STRING_EQ", 
-                  "PLUS", "MINUS", "MULT", "DIV", "MOD", "GT", "LT", "NUMBER_EQ", 
+                  "PLUS", "MINUS", "MUL", "DIV", "MOD", "GT", "LT", "NUMBER_EQ", 
                   "COMMENT", "NUMBER_L", "BOOL_L", "STRING_L", "IDENTIFIERS", 
                   "WHITESPACES", "ERROR_CHAR", "UNCLOSE_STRING", "ILLEGAL_ESCAPE" ]
 

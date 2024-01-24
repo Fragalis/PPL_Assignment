@@ -13,6 +13,12 @@ program: ;
 // PARSER:
 
 // TYPES
+literals
+	:	BOOL_L 
+	| 	NUMBER_L 
+	| 	STRING_L
+	;
+
 primitive_type
 	:	BOOL 
 	| 	NUMBER 
@@ -20,21 +26,61 @@ primitive_type
 	;
 
 primary
-	:	BOOL_L | NUMBER_L | STRING_L
+	:	literals
 	|	IDENTIFIERS
 	;
 
 element_value
-	:	expression
+	:	expr
 	|	primary
 	;
 
 // EXPRESSIONS
-expression
-	:	
-	|	
+string_expr
+	:	string_expr CONCAT string_expr
+	|	relational_expr
 	;
 
+relational_expr
+	:	relational_expr (NUMBER_EQ | STRING_EQ | NEQ | LT | GT | LTEQ | GTEQ) relational_expr
+	|	logical_expr1
+	;
+
+logical_expr1
+	:	logical_expr1 (AND | OR) adding_expr
+	|	adding_expr
+	;
+
+adding_expr
+	:	adding_expr (PLUS | MINUS) multiplicating_expr
+	| 	multiplicating_expr
+	;
+
+multiplicating_expr
+	:	multiplicating_expr	(MUL | DIV | MOD) logical_expr2
+	|	logical_expr2
+	;
+
+logical_expr2
+	:	NOT	sign_expr
+	|	sign_expr
+	;
+
+sign_expr
+	:	MINUS index_op_expr
+	|	index_op_expr
+	;
+
+index_op_expr
+	:	expr
+	|	expr
+	;
+
+expr
+	:	literals
+	|	LP string_expr RP
+	;
+/*
 // STATEMENTS
 statement_list
 	:	statement statement_list
@@ -77,7 +123,7 @@ function_call_statement
 block_statement
 	:	BEGIN block END
 	;
-
+*/
 // LEXER:
 
 // FRAGMENTS SECTION
@@ -137,7 +183,6 @@ NUMBER_EQ : '=';
 
 COMMENT
 	:	'##' ~('\r' | '\n')*
-	->	skip
 	;	
 
 // LITERALS SECTION
