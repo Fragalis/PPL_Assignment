@@ -13,20 +13,40 @@ program: ;
 // PARSER:
 
 // TYPES
-typer
+primitive_type
 	:	BOOL 
 	| 	NUMBER 
 	| 	STRING
 	;
 
+primary
+	:	BOOL_L | NUMBER_L | STRING_L
+	|	IDENTIFIERS
+	;
+
+element_value
+	:	expression
+	|	primary
+	;
+
 // EXPRESSIONS
 expression
 	:	
+	|	
 	;
 
 // STATEMENTS
+statement_list
+	:	statement statement_list
+	|	
+	;
+
 statement
-	:	variable_declr
+	:	statement_prime	NEWLINE
+	;
+
+statement_prime
+	:	variable_declaration
 	|	assignment
 	|	if_statement
 	|	for_statement
@@ -35,6 +55,27 @@ statement
 	|	return_statement
 	|	function_call_statement
 	|	block_statement
+	;
+
+break_statement
+	:	BREAK
+	;
+
+continue_statement
+	:	CONTINUE
+	;
+
+return_statement
+	:	RETURN expression
+	|	RETURN
+	;
+
+function_call_statement
+	:	IDENTIFIERS LP argument_list RP
+	;
+
+block_statement
+	:	BEGIN block END
 	;
 
 // LEXER:
@@ -85,7 +126,7 @@ STRING_EQ : '==';
 
 PLUS : '+';
 MINUS : '-';
-MULT : '*';
+MUL : '*';
 DIV : '/';
 MOD : '%';
 GT : '>';
@@ -96,6 +137,7 @@ NUMBER_EQ : '=';
 
 COMMENT
 	:	'##' ~('\r' | '\n')*
+	->	skip
 	;	
 
 // LITERALS SECTION
