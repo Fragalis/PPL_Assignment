@@ -12,6 +12,30 @@ program: ;
 
 // PARSER:
 
+// TYPES
+typer
+	:	BOOL 
+	| 	NUMBER 
+	| 	STRING
+	;
+
+// EXPRESSIONS
+expression
+	:	
+	;
+
+// STATEMENTS
+statement
+	:	variable_declr
+	|	assignment
+	|	if_statement
+	|	for_statement
+	|	break_statement
+	|	continue_statement
+	|	return_statement
+	|	function_call_statement
+	|	block_statement
+	;
 
 // LEXER:
 
