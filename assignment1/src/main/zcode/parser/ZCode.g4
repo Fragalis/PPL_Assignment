@@ -8,92 +8,163 @@ options {
 	language=Python3;
 }
 
-program: ;
+program: primitive_type* expression*;
 
 // PARSER:
-
-// TYPES
-literals
-	:	BOOL_L 
-	| 	NUMBER_L 
-	| 	STRING_L
-	;
-
+// TYPES - VALUES
 primitive_type
-	:	BOOL 
-	| 	NUMBER 
-	| 	STRING
+	:	NUMBER
+	|	BOOL
+	|	STRING
 	;
 
-primary
-	:	literals
-	|	IDENTIFIERS
+primitive_literals
+	:	NUMBER_L
+	|	BOOL_L
+	|	STRING_L
 	;
 
-element_value
-	:	expr
-	|	primary
+array_value
+	:   LBRACKET expression_list RBRACKET
 	;
+
+expression_list
+	:	expression_prime
+	|
+	;
+
+expression_prime
+	:	expression COMMA expression_prime
+	|	expression
+	;
+
 
 // EXPRESSIONS
-string_expr
-	:	string_expr CONCAT string_expr
+expression				// CONCATENATION
+	:	expression CONCAT expression
 	|	relational_expr
 	;
 
-relational_expr
-	:	relational_expr (NUMBER_EQ | STRING_EQ | NEQ | LT | GT | LTEQ | GTEQ) relational_expr
+relational_expr			// COMPARISON
+	:	relational_expr (	NUMBER_EQ 
+					  	| 	STRING_EQ 
+					  	|	NEQ
+					  	|	LT
+					  	|	GT
+					  	|	LTEQ
+					  	|	GTEQ
+					  	)
+		relational_expr
 	|	logical_expr1
 	;
 
-logical_expr1
-	:	logical_expr1 (AND | OR) adding_expr
-	|	adding_expr
+logical_expr1 			// AND | OR
+	:	logical_expr1 ( AND | OR ) numeric_expr1
+	|	numeric_expr1
 	;
 
-adding_expr
-	:	adding_expr (PLUS | MINUS) multiplicating_expr
-	| 	multiplicating_expr
-	;
-
-multiplicating_expr
-	:	multiplicating_expr	(MUL | DIV | MOD) logical_expr2
+numeric_expr1
+	:	numeric_expr1 ( MUL | DIV | MOD ) logical_expr2
+	|	numeric_expr1 ( PLUS | MINUS ) logical_expr2
 	|	logical_expr2
 	;
 
 logical_expr2
-	:	NOT	sign_expr
-	|	sign_expr
+	:	NOT logical_expr2
+	|	numeric_expr2
 	;
 
-sign_expr
-	:	MINUS index_op_expr
+numeric_expr2
+	:	MINUS numeric_expr2
 	|	index_op_expr
 	;
 
 index_op_expr
-	:	expr
-	|	expr
+	:	index_op_expr LBRACKET term RBRACKET
+	|	term
 	;
 
-expr
-	:	literals
-	|	LP string_expr RP
+term
+	:	primitive_literals
+	|	IDENTIFIER
+	|	LPAREN expression RPAREN
 	;
-/*
-// STATEMENTS
-statement_list
-	:	statement statement_list
+
+// DECLARATIONS
+
+// VARIABLES
+variable_declaration
+	:	primitive_type_declaration
+	|	dynamic_declaration
+	|	array_type_declaration
+	;
+
+primitive_type_declaration
+	:	primitive_type IDENTIFIER (ASSIGN expression)?
+	|	VAR	IDENTIFIER ASSIGN expression
+	|	DYNAMIC	IDENTIFIER ASSIGN expression
+	;
+
+array_type_declaration
+	:	primitive_type IDENTIFIER LBRACKET number_literal_list RBRACKET (ASSIGN expression)?
+	|	VAR	IDENTIFIER LBRACKET number_literal_list RBRACKET ASSIGN expression
+	;
+
+number_literal_list
+	:	NUMBER_L COMMA number_literal_list
+	|	NUMBER_L
+	;
+
+function_declaration
+	:	function_prototype_declaration
+	|	function_full_declaration
+	;
+
+function_prototype_declaration
+	:	FUNC IDENTIFIER LPAREN parameter_list RPAREN
+	;
+parameter_list
+	:	parameter_prime
 	|	
 	;
-
-statement
-	:	statement_prime	NEWLINE
+parameter_prime
+	:	parameter COMMA parameter_prime
+	|	parameter
+	;
+parameter
+	:	primitive_parameter
+	|	array_parameter
 	;
 
-statement_prime
+primitive_parameter
+	:	primitive_type IDENTIFIER
+	|	VAR	IDENTIFIER
+	;
+
+array_parameter
+	:	primitive_type IDENTIFIER LBRACKET number_literal_list RBRACKET
+	|	VAR	IDENTIFIER LBRACKET number_literal_list RBRACKET
+	;
+
+function_full_declaration
+	:	function_prototype_declaration newline_list function_body
+	;
+newline_list
+	:	NEWLINE newline_list
+	|
+	;
+function_body
+	:
+	;
+
+// STATEMENTS
+statement
+	:	statement_core NEWLINE
+	;
+
+statement_core
 	:	variable_declaration
-	|	assignment
+	|	assignment_statement
 	|	if_statement
 	|	for_statement
 	|	break_statement
@@ -103,32 +174,7 @@ statement_prime
 	|	block_statement
 	;
 
-break_statement
-	:	BREAK
-	;
-
-continue_statement
-	:	CONTINUE
-	;
-
-return_statement
-	:	RETURN expression
-	|	RETURN
-	;
-
-function_call_statement
-	:	IDENTIFIERS LP argument_list RP
-	;
-
-block_statement
-	:	BEGIN block END
-	;
-*/
 // LEXER:
-
-// FRAGMENTS SECTION
-	
-fragment DIGIT : [0-9];
 
 // KEYWORDS
 TRUE : 'true';
@@ -153,14 +199,14 @@ END : 'end';
 NOT : 'not';
 AND : 'and';
 OR : 'or';
-NEWLINE : '\n';
 
 // SEPARATORS
-LP : '(';
-RP : ')';
-LB : '[';
-RB : ']';
+LPAREN : '(';
+RPAREN : ')';
+LBRACKET : '[';
+RBRACKET : ']';
 COMMA : ',';
+NEWLINE : '\n';
 
 // OPERATORS
 ASSIGN : '<-';
@@ -179,31 +225,42 @@ GT : '>';
 LT : '<';
 NUMBER_EQ : '=';
 
-// COMMENT SECTION
-
-COMMENT
-	:	'##' ~('\r' | '\n')*
-	;	
+IDENTIFIER
+	:	NONDIGIT (NONDIGIT | DIGIT)*
+	;
 
 // LITERALS SECTION
 NUMBER_L
-	:	DIGIT+ ('.' DIGIT*)? ([eE] [+-]? DIGIT+)?
+	:	INT DEC? EXP?
 	;
 BOOL_L
-	:	TRUE | FALSE
+	:	TRUE 
+	| 	FALSE
 	;
 STRING_L
-	:	'"' ( '\\' [btnfr'\\] | ~["\\\r\n] )*? '"'
+	:	'"' ( '\\' [btnfr'\\] | ~["\\\r\n] | [']["])* '"'
 	{self.text = self.text[1:-1]}
 	;
 
-// IDENTIFIERS SECTION
+// COMMENT SECTION
 
-IDENTIFIERS
-	:	[a-zA-Z_] [a-zA-Z0-9_]*
-	;
+COMMENT
+	:	'##' ~ [\r\n]*
+	-> skip
+	;	
 
-WHITESPACES: [ \t\r\f\b]+ -> skip; // skip spaces and tabs
+WHITESPACE
+	: [ \t\r\f\b]+ 
+	-> skip
+	; // skip spaces and tabs
+
+// FRAGMENTS SECTION
+
+fragment NONDIGIT : [a-zA-Z_];
+fragment DIGIT : [0-9];
+fragment INT : DIGIT+;
+fragment DEC : '.' DIGIT*;
+fragment EXP : [eE] [+-]? DIGIT+;
 
 ERROR_CHAR: . {raise ErrorToken(self.text)};
 UNCLOSE_STRING

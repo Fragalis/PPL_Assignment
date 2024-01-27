@@ -1,1 +1,1 @@
-##stillavalidcomment,<EOF>
+Another    ' valid 	 stri\ng yeah,<EOF>

@@ -1,5 +1,1 @@
-a,
-,
-,
-,
-,<EOF>
+This's a valid string,<EOF>

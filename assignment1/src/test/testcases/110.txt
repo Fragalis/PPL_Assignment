@@ -1,1 +1,1 @@
-## A valid comment
+"Simon says: '"This is valid"

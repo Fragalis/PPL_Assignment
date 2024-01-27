@@ -1,1 +1,1 @@
-"Another    ' valid 	 string\ yeah",<EOF>
+Invalid,number,1.2,Error Token .

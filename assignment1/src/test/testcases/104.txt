@@ -1,1 +1,1 @@
-"Another    ' valid 	 stri\ng yeah"
+1nvalid

@@ -1,4 +1,1 @@
-a
-
-
-
+"This's a valid string"
