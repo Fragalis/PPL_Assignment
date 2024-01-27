@@ -34,6 +34,7 @@ class LexerSuite(unittest.TestCase):
                                       ,"Another  \b \f \' valid \t stri\\ng yeah,<EOF>"
                                       ,111))
         
+        
         """separators"""
         self.assertTrue(TestLexer.test("[,](\n)","[,,,],(,\n,),<EOF>",120))
         self.assertTrue(TestLexer.test("a\n\n\n\n","a,\n,\n,\n,\n,<EOF>",121))    

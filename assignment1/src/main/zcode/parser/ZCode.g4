@@ -8,7 +8,7 @@ options {
 	language=Python3;
 }
 
-program: primitive_type* expression*;
+program: statement_list;
 
 // PARSER:
 // TYPES - VALUES
@@ -95,7 +95,6 @@ term
 // VARIABLES
 variable_declaration
 	:	primitive_type_declaration
-	|	dynamic_declaration
 	|	array_type_declaration
 	;
 
@@ -147,31 +146,81 @@ array_parameter
 	;
 
 function_full_declaration
-	:	function_prototype_declaration newline_list function_body
+	:	function_prototype_declaration nullable_newline_list function_body
 	;
+
 newline_list
 	:	NEWLINE newline_list
+	|	NEWLINE
+	;
+nullable_newline_list
+	:	newline_list
 	|
 	;
+
 function_body
-	:
+	:	return_statement NEWLINE
+	|	block_statement	NEWLINE
+	|
 	;
 
 // STATEMENTS
-statement
-	:	statement_core NEWLINE
+statement_list
+	:	statement nullable_newline_list statement_list
+	|
 	;
 
-statement_core
+statement
+	:	simple_statement NEWLINE
+	|	compound_statement
+	;
+
+simple_statement
 	:	variable_declaration
 	|	assignment_statement
-	|	if_statement
-	|	for_statement
 	|	break_statement
 	|	continue_statement
 	|	return_statement
 	|	function_call_statement
+	;
+
+compound_statement
+	:	if_statement
+	|	for_statement
 	|	block_statement
+	|	function_declaration
+	;
+
+assignment_statement
+	:	
+	;
+
+if_statement
+	:
+	;
+
+for_statement
+	:	FOR IDENTIFIER UNTIL expression BY expression nullable_newline_list statement
+	;
+
+break_statement
+	:	BREAK NEWLINE
+	;
+
+continue_statement
+	:	CONTINUE NEWLINE
+	;
+
+return_statement
+	:	RETURN expression? NEWLINE
+	;
+
+function_call_statement
+	:	IDENTIFIER LPAREN parameter_list RPAREN	NEWLINE
+	;
+
+block_statement
+	:	BEGIN newline_list statement_list END newline_list
 	;
 
 // LEXER:
