@@ -25,19 +25,23 @@ primitive_literals
 	;
 
 array_value
-	:   LBRACKET expression_list RBRACKET
+	:   LBRACKET array_literal_list RBRACKET
 	;
 
-expression_list
-	:	expression_prime
+array_literal_list
+	:	array_literal_prime
 	|
 	;
 
-expression_prime
-	:	expression COMMA expression_prime
-	|	expression
+array_literal_prime
+	:	array_literal COMMA array_literal_prime
+	|	array_literal
 	;
 
+array_literal
+	:	expression
+	|	array_value
+	;
 
 // EXPRESSIONS
 expression				// CONCATENATION
@@ -105,8 +109,8 @@ primitive_type_declaration
 	;
 
 array_type_declaration
-	:	primitive_type IDENTIFIER LBRACKET number_literal_list RBRACKET (ASSIGN expression)?
-	|	VAR	IDENTIFIER LBRACKET number_literal_list RBRACKET ASSIGN expression
+	:	primitive_type IDENTIFIER LBRACKET number_literal_list RBRACKET (ASSIGN array_value)?
+	|	VAR	IDENTIFIER LBRACKET number_literal_list RBRACKET ASSIGN array_value
 	;
 
 number_literal_list
@@ -167,7 +171,7 @@ function_body
 // STATEMENTS
 statement_list
 	:	statement nullable_newline_list statement_list
-	|
+	|	
 	;
 
 statement
