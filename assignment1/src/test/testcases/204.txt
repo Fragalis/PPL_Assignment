@@ -1,0 +1,3 @@
+func main() begin
+                    var x <- variable
+                    end

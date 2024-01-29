@@ -24,20 +24,50 @@ class LexerSuite(unittest.TestCase):
         self.assertTrue(TestLexer.test("Valid number question mark 0e","Valid,number,question,mark,0,e,<EOF>",108))
         
         """strings"""
-        self.assertTrue(TestLexer.test("\"This's a valid string\""
-                                      ,"This's a valid string,<EOF>"
+        self.assertTrue(TestLexer.test(""" "" """
+                                      ,""",<EOF>"""
                                       ,109))
-        self.assertTrue(TestLexer.test("\"Simon says: \'\"This is valid\""
-                                      ,"Simon says: \'\"This is valid,<EOF>"
+        self.assertTrue(TestLexer.test(""" "This's a valid string" """
+                                      ,"""This's a valid string,<EOF>"""
                                       ,110))
-        self.assertTrue(TestLexer.test("\"Another  \b \f \' valid \t stri\\ng yeah\""
-                                      ,"Another  \b \f \' valid \t stri\\ng yeah,<EOF>"
+        self.assertTrue(TestLexer.test(""" "Simon says: '\"This is valid" """
+                                      ,"""Simon says: '\"This is valid,<EOF>"""
                                       ,111))
-        
-        
+        self.assertTrue(TestLexer.test(""" "Another  \b \f \' valid \t stri\\ng yeah" """
+                                      ,"""Another  \b \f \' valid \t stri\\ng yeah,<EOF>"""
+                                      ,112))
+        self.assertTrue(TestLexer.test(""" "He asked me: '"Where is John?'"" """
+                                      ,"""He asked me: '"Where is John?'",<EOF>"""
+                                      ,113))
+        self.assertTrue(TestLexer.test(""" "\b\f\t\'\\" """
+                                      ,"""\b\f\t\'\\,<EOF>"""
+                                      ,114))
+    
+        """unclosed string"""
+        self.assertTrue(TestLexer.test(""" "test """
+                                      ,"""Unclosed String: test """
+                                      ,115))
+        self.assertTrue(TestLexer.test(""" "quotation: '" """
+                                      ,"""Unclosed String: quotation: '" """
+                                      ,116))
+        self.assertTrue(TestLexer.test(""" "escape \b \f \' \t \\"""
+                                      ,"""Unclosed String: escape \b \f \' \t \\"""
+                                      ,117))    
+        self.assertTrue(TestLexer.test(""" " """
+                                      ,"""Unclosed String:  """
+                                      ,118))    
+        self.assertTrue(TestLexer.test(""" "\b\f\t\\\'" """
+                                      ,"""Unclosed String: \b\f\t\\\'" """
+                                      ,119)) 
+        """illegal escape"""
+        self.assertTrue(TestLexer.test(""" "\a" """
+                                      ,""" """
+                                      ,120)) 
+    
         """separators"""
-        self.assertTrue(TestLexer.test("[,](\n)","[,,,],(,\n,),<EOF>",120))
-        self.assertTrue(TestLexer.test("a\n\n\n\n","a,\n,\n,\n,\n,<EOF>",121))    
+        self.assertTrue(TestLexer.test("[,](\n)","[,,,],(,\n,),<EOF>",130))
+        self.assertTrue(TestLexer.test("a\n\n\n\n","a,\n,\n,\n,\n,<EOF>",131))    
+        self.assertTrue(TestLexer.test("[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]","[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]],<EOF>",130))
         
     def test_comments(self):   
         """comments test"""

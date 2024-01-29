@@ -1,1 +1,1 @@
-"Simon says: '"This is valid"
+ "This's a valid string" 

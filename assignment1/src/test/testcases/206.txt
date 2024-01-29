@@ -1,0 +1,3 @@
+func main() begin
+                    number x[1,1,1] <- [[[[[[[[[]]]]]]]]]
+                    end

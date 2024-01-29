@@ -1,0 +1,7 @@
+func main() begin
+                    number x1 <- 1
+number x2 <- 2
+number x3 <- 3
+string asdjn
+                    bool x4 <- test()
+                    end

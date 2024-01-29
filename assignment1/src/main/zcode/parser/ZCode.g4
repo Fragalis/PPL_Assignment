@@ -8,7 +8,41 @@ options {
 	language=Python3;
 }
 
-program: statement_list;
+program: pre_declaration_list main_function post_declaration_list EOF;
+pre_declaration_list
+	:	pre_declaration_prime
+	|
+	;
+
+pre_declaration_prime
+	:	pre_declaration nullable_newline_list pre_declaration_prime
+	|	pre_declaration
+	;
+
+pre_declaration
+	:	variable_declaration
+	|	function_declaration
+	;
+
+
+post_declaration_list
+	:	post_declaration_prime
+	|
+	;
+
+post_declaration_prime
+	:	post_declaration nullable_newline_list post_declaration_prime
+	|	post_declaration
+	;
+
+post_declaration
+	:	variable_declaration
+	|	function_full_declaration
+	;
+
+main_function
+	:	FUNC 'main' LPAREN parameter_list RPAREN nullable_newline_list block_statement
+	;
 
 // PARSER:
 // TYPES - VALUES
@@ -25,7 +59,7 @@ primitive_literals
 	;
 
 array_value
-	:   LBRACKET array_literal_list RBRACKET
+	:	LBRACKET array_literal_list RBRACKET
 	;
 
 array_literal_list
@@ -43,14 +77,18 @@ array_literal
 	|	array_value
 	;
 
+identifier
+	:	IDENTIFIER
+	;
+
 // EXPRESSIONS
 expression				// CONCATENATION
-	:	expression CONCAT expression
+	:	relational_expr CONCAT relational_expr
 	|	relational_expr
 	;
 
 relational_expr			// COMPARISON
-	:	relational_expr (	NUMBER_EQ 
+	:	logical_expr1 	(	NUMBER_EQ 
 					  	| 	STRING_EQ 
 					  	|	NEQ
 					  	|	LT
@@ -58,7 +96,7 @@ relational_expr			// COMPARISON
 					  	|	LTEQ
 					  	|	GTEQ
 					  	)
-		relational_expr
+		logical_expr1
 	|	logical_expr1
 	;
 
@@ -68,29 +106,38 @@ logical_expr1 			// AND | OR
 	;
 
 numeric_expr1
-	:	numeric_expr1 ( MUL | DIV | MOD ) logical_expr2
-	|	numeric_expr1 ( PLUS | MINUS ) logical_expr2
+	:	numeric_expr1 ( PLUS | MINUS ) numeric_expr2
+	|	numeric_expr2
+	;
+
+numeric_expr2
+	:	numeric_expr2 ( MUL | DIV | MOD ) logical_expr2
 	|	logical_expr2
 	;
 
 logical_expr2
 	:	NOT logical_expr2
-	|	numeric_expr2
+	|	numeric_expr3
 	;
 
-numeric_expr2
-	:	MINUS numeric_expr2
-	|	index_op_expr
-	;
-
-index_op_expr
-	:	index_op_expr LBRACKET term RBRACKET
+numeric_expr3
+	:	MINUS numeric_expr3
 	|	term
 	;
 
+element_expr
+	:	identifier LBRACKET index_op_expr RBRACKET
+	;
+index_op_expr
+	:	expression
+	|	expression COMMA index_op_expr
+	;
+	
 term
 	:	primitive_literals
-	|	IDENTIFIER
+	|	identifier
+	|	element_expr
+	|	function_call
 	|	LPAREN expression RPAREN
 	;
 
@@ -103,14 +150,14 @@ variable_declaration
 	;
 
 primitive_type_declaration
-	:	primitive_type IDENTIFIER (ASSIGN expression)?
-	|	VAR	IDENTIFIER ASSIGN expression
-	|	DYNAMIC	IDENTIFIER ASSIGN expression
+	:	primitive_type identifier (ASSIGN expression)?
+	|	VAR	identifier ASSIGN expression
+	|	DYNAMIC	identifier ASSIGN expression
 	;
 
 array_type_declaration
-	:	primitive_type IDENTIFIER LBRACKET number_literal_list RBRACKET (ASSIGN array_value)?
-	|	VAR	IDENTIFIER LBRACKET number_literal_list RBRACKET ASSIGN array_value
+	:	primitive_type identifier LBRACKET number_literal_list RBRACKET (ASSIGN array_value)?
+	|	VAR	identifier LBRACKET number_literal_list RBRACKET ASSIGN array_value
 	;
 
 number_literal_list
@@ -124,7 +171,7 @@ function_declaration
 	;
 
 function_prototype_declaration
-	:	FUNC IDENTIFIER LPAREN parameter_list RPAREN
+	:	FUNC identifier LPAREN parameter_list RPAREN
 	;
 parameter_list
 	:	parameter_prime
@@ -140,22 +187,23 @@ parameter
 	;
 
 primitive_parameter
-	:	primitive_type IDENTIFIER
-	|	VAR	IDENTIFIER
+	:	primitive_type identifier
+	|	VAR	identifier
 	;
 
 array_parameter
-	:	primitive_type IDENTIFIER LBRACKET number_literal_list RBRACKET
-	|	VAR	IDENTIFIER LBRACKET number_literal_list RBRACKET
+	:	primitive_type identifier LBRACKET number_literal_list RBRACKET
+	|	VAR	identifier LBRACKET number_literal_list RBRACKET
 	;
 
 function_full_declaration
 	:	function_prototype_declaration nullable_newline_list function_body
 	;
 
+newline : NEWLINE | EOF;
 newline_list
 	:	NEWLINE newline_list
-	|	NEWLINE
+	|	NEWLINE | EOF
 	;
 nullable_newline_list
 	:	newline_list
@@ -163,8 +211,8 @@ nullable_newline_list
 	;
 
 function_body
-	:	return_statement NEWLINE
-	|	block_statement	NEWLINE
+	:	return_statement newline
+	|	block_statement	newline
 	|
 	;
 
@@ -175,7 +223,12 @@ statement_list
 	;
 
 statement
-	:	simple_statement NEWLINE
+	:	if_statement
+	|	non_if_statement
+	;
+
+non_if_statement
+	:	simple_statement newline
 	|	compound_statement
 	;
 
@@ -189,38 +242,58 @@ simple_statement
 	;
 
 compound_statement
-	:	if_statement
-	|	for_statement
+	:	for_statement
 	|	block_statement
 	|	function_declaration
 	;
 
 assignment_statement
-	:	
+	:	assignee ASSIGN expression
+	;
+assignee
+	:	identifier
+	|	element_expr
 	;
 
 if_statement
-	:
+	:	IF expression nullable_newline_list statement
+		(ELIF expression nullable_newline_list statement)*
+		ELSE expression nullable_newline_list statement?
 	;
 
 for_statement
-	:	FOR IDENTIFIER UNTIL expression BY expression nullable_newline_list statement
+	:	FOR identifier UNTIL expression BY expression nullable_newline_list statement
 	;
 
 break_statement
-	:	BREAK NEWLINE
+	:	BREAK
 	;
 
 continue_statement
-	:	CONTINUE NEWLINE
+	:	CONTINUE
 	;
 
 return_statement
-	:	RETURN expression? NEWLINE
+	:	RETURN expression?
 	;
 
 function_call_statement
-	:	IDENTIFIER LPAREN parameter_list RPAREN	NEWLINE
+	:	function_call newline
+	;
+function_call
+	:	identifier LPAREN argument_list RPAREN
+	;
+argument_list
+	:	argument_prime
+	|	
+	;
+argument_prime
+	:	argument COMMA argument_prime
+	|	argument
+	;
+argument
+	:	parameter
+	|	expression
 	;
 
 block_statement
@@ -228,6 +301,20 @@ block_statement
 	;
 
 // LEXER:
+
+// LITERALS SECTION
+NUMBER_L
+	:	INT DEC? EXP?
+	;
+BOOL_L
+	:	TRUE 
+	| 	FALSE
+	;
+STRING_L
+	:	QUOTE ( ESCAPE_SEQ | ILLEGAL_NL_STR | QUOTE_IN_STR )* QUOTE
+	{self.text = self.text[1:-1]}
+
+	;
 
 // KEYWORDS
 TRUE : 'true';
@@ -282,19 +369,6 @@ IDENTIFIER
 	:	NONDIGIT (NONDIGIT | DIGIT)*
 	;
 
-// LITERALS SECTION
-NUMBER_L
-	:	INT DEC? EXP?
-	;
-BOOL_L
-	:	TRUE 
-	| 	FALSE
-	;
-STRING_L
-	:	'"' ( '\\' [btnfr'\\] | ~["\\\r\n] | [']["])* '"'
-	{self.text = self.text[1:-1]}
-	;
-
 // COMMENT SECTION
 
 COMMENT
@@ -311,22 +385,29 @@ WHITESPACE
 
 fragment NONDIGIT : [a-zA-Z_];
 fragment DIGIT : [0-9];
+
 fragment INT : DIGIT+;
 fragment DEC : '.' DIGIT*;
 fragment EXP : [eE] [+-]? DIGIT+;
+fragment QUOTE : '"';
+fragment QUOTE_IN_STR : '\''["];
+fragment ILLEGAL_NL_STR : ~["\r\n];
+fragment ESCAPE_SEQ : '\\' [brfnt'\\];
+fragment ILLEGAL_ESCAPE_SEQ : '\\' ~[brfnt"'\\];
+
+UNCLOSE_STRING
+	: QUOTE ( QUOTE_IN_STR | ESCAPE_SEQ | ILLEGAL_NL_STR )*
+	{
+		self.text = self.text[1:]
+		raise UncloseString(self.text)
+	};
+
+ILLEGAL_ESCAPE
+	: QUOTE ( QUOTE_IN_STR | ILLEGAL_ESCAPE_SEQ | ILLEGAL_NL_STR )*
+	{
+		self.text = self.text[1:]
+		raise IllegalEscape(self.text)
+	}
+	;
 
 ERROR_CHAR: . {raise ErrorToken(self.text)};
-UNCLOSE_STRING
-	: '"' ( '\\'  [btnfr'\\] | ~[\b\t\f\r\n\\"] )*
-	{
-		self.text = self.text[1:]
-		raise ErrorToken(self.text)
-	}
-	;
-ILLEGAL_ESCAPE
-	: '"' ( '\\' ~[btnfr'\\] | ~'\\')*
-	{
-		self.text = self.text[1:]
-		raise ErrorToken(self.text)
-	}
-	;

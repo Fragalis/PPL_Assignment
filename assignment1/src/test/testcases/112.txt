@@ -1,2 +1,1 @@
-b
-## After slash n
+ "Another    ' valid 	 stri\ng yeah" 

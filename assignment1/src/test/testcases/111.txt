@@ -1,1 +1,1 @@
-"Another    ' valid 	 stri\ng yeah"
+ "Simon says: '"This is valid" 

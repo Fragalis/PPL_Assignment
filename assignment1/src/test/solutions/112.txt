@@ -1,2 +1,1 @@
-b,
-,## After slash n,<EOF>
+Another    ' valid 	 stri\ng yeah,<EOF>

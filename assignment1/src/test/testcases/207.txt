@@ -1,0 +1,3 @@
+func main() begin
+                    dynamic x[1,1,1] <- [[[[[[[[[]]]]]]]]]
+                    end
