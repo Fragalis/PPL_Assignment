@@ -1,0 +1,4 @@
+var x <- 1
+                    func function1(bool b) return x
+                    func main() begin
+                    end

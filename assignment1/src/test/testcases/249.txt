@@ -1,0 +1,6 @@
+func function1(bool b) begin
+                    var x <- arr[1,2 + (b and c)]
+                    b <- false and true
+                    end
+                    func main() begin
+                    end

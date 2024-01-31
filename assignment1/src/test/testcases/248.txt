@@ -1,0 +1,5 @@
+func function1(bool b) begin
+                    func invalid_func_decl()
+                    end
+                    func main() begin
+                    end

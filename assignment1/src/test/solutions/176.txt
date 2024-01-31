@@ -1,0 +1,1 @@
+func,fUnc,(,number,nUmber,),begin,truE,<-,true,end,<EOF>

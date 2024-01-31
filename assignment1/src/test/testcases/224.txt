@@ -1,0 +1,3 @@
+func main() begin
+                    x <- -------a
+                    end

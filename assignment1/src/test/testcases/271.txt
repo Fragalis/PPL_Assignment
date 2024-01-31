@@ -1,0 +1,4 @@
+func main() begin
+                    elif expr stmt <- 2
+                    else stmt <- 3
+                    end

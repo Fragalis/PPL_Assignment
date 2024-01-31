@@ -1,0 +1,4 @@
+
+,begin,for,i,in,value,<-,exponent,end,
+,
+,<EOF>

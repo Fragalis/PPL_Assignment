@@ -1,0 +1,4 @@
+## []as[d]as[d "string" Body
+                begin  for  i in value <- exponent end
+                ## After body
+                

@@ -1,0 +1,11 @@
+func main() begin
+                    number fib[100]
+                    fib[0] <- 1
+                    fib[1] <- 1
+                    var i <- 1
+                    for i until i < 99 by 1 begin
+                    fib[i+1] <- fib[i] + fib[i-1]
+                    end
+                    i <- 0
+                    for i until i < 100 by 1 writeString(fib[i])
+                    end

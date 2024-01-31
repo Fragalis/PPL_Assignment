@@ -1,0 +1,7 @@
+var x <- 1
+                func main() begin
+                    if e1 stmt <- 1
+                    else begin
+                        for i until i by i if e1 stmt <- 2
+                    end
+                end

@@ -1,0 +1,17 @@
+func main() begin
+                    if expr1 stmt <- 1
+                    elif expr1 
+                        if expr2 stmt <- 21
+                        elif expr2 
+                            if expr2 stmt <- 21
+                            elif expr2 
+                                if expr2 stmt <- 21
+                                elif expr2 
+                                    if expr2 stmt <- 21
+                                    elif expr2 stmt <- 22
+                                    else stmt <- 23
+                                else stmt <- 23
+                            else stmt <- 23
+                        else stmt <- 23
+                    else stmt <- 3
+                    end

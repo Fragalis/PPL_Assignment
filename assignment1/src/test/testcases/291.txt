@@ -1,0 +1,16 @@
+func finder(number array[100], number left, number right, number k) begin
+                    if(left <= right) begin
+                        var mid <- right + (left - right) / 2
+                        if(array[mid] = k) return mid
+                        if(array[mid] > k) return finder(array, left, mid - 1, k)
+                        if(array[mid] < k) return finder(array, mid, right, k)
+                    end
+                    return -1
+                end
+                func main()
+                begin
+                    var arr[5] <- [1,2,3,4,5]
+                    var index <- finder(arr,0,4,2)
+                    if(index = -1) writeString("No")
+                    else writeNumber(index)
+                end

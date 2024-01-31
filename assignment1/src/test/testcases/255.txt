@@ -1,0 +1,10 @@
+var x <- 1
+                    func function1(bool b)
+                    func function2(number a, string c) begin
+                    begin
+                    begin
+                    end
+                    end
+                    end
+                    func main() begin
+                    end

@@ -1,2 +1,5 @@
-b,
+var,x,<-,1,and,y,
+,begin,tester,end,
+,
+,end,
 ,<EOF>

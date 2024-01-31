@@ -1,2 +1,3 @@
-## Before slash n
-a
+bool y is not var <- "!@#%&^%@(*!%)^#*!@&(*#^@%$0)
+                if lexer the quick brown fox <-==!= else
+                

@@ -1,1 +1,1 @@
-<EOF>
+func,main,dynamic,type,<EOF>

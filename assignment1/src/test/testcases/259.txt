@@ -1,0 +1,8 @@
+var x <- 1
+                    func function1(bool b)
+                    func function2(number a, string c)
+                    func main() begin
+                    end
+                    func function3() begin
+                    return function1(1,2,3,4,5) + function2(1)
+                    end

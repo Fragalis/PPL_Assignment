@@ -1,1 +1,1 @@
-,<EOF>
+string ,inside,string,,<EOF>

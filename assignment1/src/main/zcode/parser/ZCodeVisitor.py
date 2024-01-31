@@ -19,13 +19,13 @@ class ZCodeVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by ZCodeParser#pre_declaration_prime.
-    def visitPre_declaration_prime(self, ctx:ZCodeParser.Pre_declaration_primeContext):
+    # Visit a parse tree produced by ZCodeParser#pre_declaration.
+    def visitPre_declaration(self, ctx:ZCodeParser.Pre_declarationContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by ZCodeParser#pre_declaration.
-    def visitPre_declaration(self, ctx:ZCodeParser.Pre_declarationContext):
+    # Visit a parse tree produced by ZCodeParser#main_function.
+    def visitMain_function(self, ctx:ZCodeParser.Main_functionContext):
         return self.visitChildren(ctx)
 
 
@@ -34,18 +34,8 @@ class ZCodeVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by ZCodeParser#post_declaration_prime.
-    def visitPost_declaration_prime(self, ctx:ZCodeParser.Post_declaration_primeContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by ZCodeParser#post_declaration.
     def visitPost_declaration(self, ctx:ZCodeParser.Post_declarationContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by ZCodeParser#main_function.
-    def visitMain_function(self, ctx:ZCodeParser.Main_functionContext):
         return self.visitChildren(ctx)
 
 
@@ -194,8 +184,8 @@ class ZCodeVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by ZCodeParser#newline.
-    def visitNewline(self, ctx:ZCodeParser.NewlineContext):
+    # Visit a parse tree produced by ZCodeParser#nullable_newline_list.
+    def visitNullable_newline_list(self, ctx:ZCodeParser.Nullable_newline_listContext):
         return self.visitChildren(ctx)
 
 
@@ -204,8 +194,8 @@ class ZCodeVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by ZCodeParser#nullable_newline_list.
-    def visitNullable_newline_list(self, ctx:ZCodeParser.Nullable_newline_listContext):
+    # Visit a parse tree produced by ZCodeParser#newline.
+    def visitNewline(self, ctx:ZCodeParser.NewlineContext):
         return self.visitChildren(ctx)
 
 
@@ -251,6 +241,26 @@ class ZCodeVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by ZCodeParser#if_statement.
     def visitIf_statement(self, ctx:ZCodeParser.If_statementContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ZCodeParser#if_clause.
+    def visitIf_clause(self, ctx:ZCodeParser.If_clauseContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ZCodeParser#elif_clause_list.
+    def visitElif_clause_list(self, ctx:ZCodeParser.Elif_clause_listContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ZCodeParser#elif_clause.
+    def visitElif_clause(self, ctx:ZCodeParser.Elif_clauseContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by ZCodeParser#else_clause.
+    def visitElse_clause(self, ctx:ZCodeParser.Else_clauseContext):
         return self.visitChildren(ctx)
 
 

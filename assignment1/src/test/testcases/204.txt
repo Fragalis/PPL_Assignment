@@ -1,3 +1,3 @@
 func main() begin
-                    var x <- variable
+                    var x <- variable[][][]
                     end

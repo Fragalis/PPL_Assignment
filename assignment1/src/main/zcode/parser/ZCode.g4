@@ -1,5 +1,5 @@
 grammar ZCode;
-
+//2110866
 @lexer::header {
 from lexererr import *
 }
@@ -8,15 +8,18 @@ options {
 	language=Python3;
 }
 
-program: pre_declaration_list main_function post_declaration_list EOF;
-pre_declaration_list
-	:	pre_declaration_prime
-	|
+program
+	:	nullable_newline_list
+		pre_declaration_list
+		main_function 
+		post_declaration_list 
+		nullable_newline_list 
+		EOF
 	;
 
-pre_declaration_prime
-	:	pre_declaration nullable_newline_list pre_declaration_prime
-	|	pre_declaration
+pre_declaration_list
+	:	pre_declaration nullable_newline_list pre_declaration_list
+	|	
 	;
 
 pre_declaration
@@ -24,24 +27,18 @@ pre_declaration
 	|	function_declaration
 	;
 
-
-post_declaration_list
-	:	post_declaration_prime
-	|
+main_function
+	:	FUNC 'main' LPAREN RPAREN nullable_newline_list block_statement
 	;
 
-post_declaration_prime
-	:	post_declaration nullable_newline_list post_declaration_prime
-	|	post_declaration
+post_declaration_list
+	:	post_declaration nullable_newline_list post_declaration_list
+	|	
 	;
 
 post_declaration
 	:	variable_declaration
 	|	function_full_declaration
-	;
-
-main_function
-	:	FUNC 'main' LPAREN parameter_list RPAREN nullable_newline_list block_statement
 	;
 
 // PARSER:
@@ -127,10 +124,11 @@ numeric_expr3
 
 element_expr
 	:	identifier LBRACKET index_op_expr RBRACKET
+	|	function_call LBRACKET index_op_expr RBRACKET
 	;
 index_op_expr
-	:	expression
-	|	expression COMMA index_op_expr
+	:	expression COMMA index_op_expr
+	|	expression 
 	;
 	
 term
@@ -150,13 +148,15 @@ variable_declaration
 	;
 
 primitive_type_declaration
-	:	primitive_type identifier (ASSIGN expression)?
+	:	primitive_type identifier
+	|	primitive_type identifier ASSIGN expression
 	|	VAR	identifier ASSIGN expression
 	|	DYNAMIC	identifier ASSIGN expression
 	;
 
 array_type_declaration
 	:	primitive_type identifier LBRACKET number_literal_list RBRACKET (ASSIGN array_value)?
+	|	primitive_type identifier LBRACKET number_literal_list RBRACKET ASSIGN array_value
 	|	VAR	identifier LBRACKET number_literal_list RBRACKET ASSIGN array_value
 	;
 
@@ -171,7 +171,7 @@ function_declaration
 	;
 
 function_prototype_declaration
-	:	FUNC identifier LPAREN parameter_list RPAREN
+	:	FUNC identifier LPAREN parameter_list RPAREN newline
 	;
 parameter_list
 	:	parameter_prime
@@ -197,23 +197,23 @@ array_parameter
 	;
 
 function_full_declaration
-	:	function_prototype_declaration nullable_newline_list function_body
+	:	FUNC identifier LPAREN parameter_list RPAREN nullable_newline_list function_body
 	;
 
-newline : NEWLINE | EOF;
-newline_list
-	:	NEWLINE newline_list
-	|	NEWLINE | EOF
-	;
 nullable_newline_list
 	:	newline_list
 	|
 	;
+newline_list
+	:	NEWLINE newline_list
+	|	NEWLINE
+	|   EOF
+	;
+newline : NEWLINE | EOF;
 
 function_body
-	:	return_statement newline
-	|	block_statement	newline
-	|
+	:	return_statement
+	|	block_statement
 	;
 
 // STATEMENTS
@@ -228,7 +228,7 @@ statement
 	;
 
 non_if_statement
-	:	simple_statement newline
+	:	simple_statement
 	|	compound_statement
 	;
 
@@ -244,11 +244,10 @@ simple_statement
 compound_statement
 	:	for_statement
 	|	block_statement
-	|	function_declaration
 	;
 
 assignment_statement
-	:	assignee ASSIGN expression
+	:	assignee ASSIGN expression newline
 	;
 assignee
 	:	identifier
@@ -256,9 +255,21 @@ assignee
 	;
 
 if_statement
+	:	if_clause elif_clause_list else_clause
+	;
+if_clause
 	:	IF expression nullable_newline_list statement
-		(ELIF expression nullable_newline_list statement)*
-		ELSE expression nullable_newline_list statement?
+	;
+elif_clause_list
+	:	elif_clause elif_clause_list
+	|
+	;
+elif_clause
+	:	ELIF expression nullable_newline_list statement
+	;
+else_clause
+	:	ELSE nullable_newline_list statement
+	|
 	;
 
 for_statement
@@ -266,15 +277,16 @@ for_statement
 	;
 
 break_statement
-	:	BREAK
+	:	BREAK newline
 	;
 
 continue_statement
-	:	CONTINUE
+	:	CONTINUE newline
 	;
 
 return_statement
-	:	RETURN expression?
+	:	RETURN expression newline
+	|	RETURN newline
 	;
 
 function_call_statement
@@ -302,18 +314,17 @@ block_statement
 
 // LEXER:
 
-// LITERALS SECTION
+// LITERALS
 NUMBER_L
 	:	INT DEC? EXP?
 	;
 BOOL_L
-	:	TRUE 
+	:	TRUE
 	| 	FALSE
 	;
 STRING_L
-	:	QUOTE ( ESCAPE_SEQ | ILLEGAL_NL_STR | QUOTE_IN_STR )* QUOTE
+	:	QUOTE STRING_CHAR* QUOTE
 	{self.text = self.text[1:-1]}
-
 	;
 
 // KEYWORDS
@@ -365,23 +376,23 @@ GT : '>';
 LT : '<';
 NUMBER_EQ : '=';
 
+// IDENTIFIER
 IDENTIFIER
 	:	NONDIGIT (NONDIGIT | DIGIT)*
 	;
 
-// COMMENT SECTION
-
+// COMMENT
 COMMENT
 	:	'##' ~ [\r\n]*
-	-> skip
+	-> 	skip
 	;	
 
 WHITESPACE
-	: [ \t\r\f\b]+ 
-	-> skip
-	; // skip spaces and tabs
+	: 	[ \t\r\f\b]+ 
+	-> 	skip
+	; 	// skip spaces and tabs
 
-// FRAGMENTS SECTION
+// FRAGMENTS
 
 fragment NONDIGIT : [a-zA-Z_];
 fragment DIGIT : [0-9];
@@ -390,24 +401,26 @@ fragment INT : DIGIT+;
 fragment DEC : '.' DIGIT*;
 fragment EXP : [eE] [+-]? DIGIT+;
 fragment QUOTE : '"';
-fragment QUOTE_IN_STR : '\''["];
-fragment ILLEGAL_NL_STR : ~["\r\n];
+fragment QUOTE_IN_STR : '\''["] | '\\' [']["];
+fragment CHARACTER : ~["\\\r\n\f];
 fragment ESCAPE_SEQ : '\\' [brfnt'\\];
-fragment ILLEGAL_ESCAPE_SEQ : '\\' ~[brfnt"'\\];
+fragment ILLEGAL_ESCAPE_SEQ : '\\' ~[brfnt'\\];
+fragment STRING_CHAR : QUOTE_IN_STR | ESCAPE_SEQ | CHARACTER;
 
-UNCLOSE_STRING
-	: QUOTE ( QUOTE_IN_STR | ESCAPE_SEQ | ILLEGAL_NL_STR )*
-	{
-		self.text = self.text[1:]
-		raise UncloseString(self.text)
-	};
-
+// ERROR HANDLER
 ILLEGAL_ESCAPE
-	: QUOTE ( QUOTE_IN_STR | ILLEGAL_ESCAPE_SEQ | ILLEGAL_NL_STR )*
+	:	QUOTE STRING_CHAR* ILLEGAL_ESCAPE_SEQ
 	{
 		self.text = self.text[1:]
 		raise IllegalEscape(self.text)
 	}
 	;
+
+UNCLOSE_STRING
+	:	QUOTE STRING_CHAR*
+	{
+		self.text = self.text[1:]
+		raise UncloseString(self.text)
+	};
 
 ERROR_CHAR: . {raise ErrorToken(self.text)};

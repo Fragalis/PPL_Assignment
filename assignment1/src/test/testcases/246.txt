@@ -1,0 +1,4 @@
+func function1(bool b) begin
+                    end
+                    func main() begin
+                    end

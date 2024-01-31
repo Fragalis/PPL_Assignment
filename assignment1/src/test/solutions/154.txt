@@ -1,2 +1,1 @@
-
-,a,<EOF>
+bool,y,is,not,var,<-,Unclosed String: !@#%&^%@(*!%)^#*!@&(*#^@%$0)

@@ -1,0 +1,5 @@
+func main() begin
+                    for i_start until i_end by i_by begin 
+                    arr[1,foo(3)] <- brr[2,c+-1]
+                    end
+                    end

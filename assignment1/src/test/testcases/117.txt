@@ -1,1 +1,1 @@
- "escape   ' 	 \
+ "Escape seq: \f" 
