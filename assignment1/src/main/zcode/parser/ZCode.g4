@@ -28,7 +28,7 @@ pre_declaration
 	;
 
 main_function
-	:	FUNC 'main' LPAREN RPAREN nullable_newline_list block_statement
+	:	FUNC 'main' LPAREN RPAREN nullable_newline_list function_body
 	;
 
 post_declaration_list
@@ -207,9 +207,8 @@ nullable_newline_list
 newline_list
 	:	NEWLINE newline_list
 	|	NEWLINE
-	|   EOF
 	;
-newline : NEWLINE | EOF;
+newline : NEWLINE;
 
 function_body
 	:	return_statement

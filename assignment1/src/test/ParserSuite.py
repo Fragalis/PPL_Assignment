@@ -14,53 +14,63 @@ class ParserSuite(unittest.TestCase):
         """Declarations and Assignments - 10 testcases"""
         input = """func main() begin
                     number x <- 1
-                    end"""
+                    end
+                    """
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,201))
         input = """func main() begin
                     bool x <- true
-                    end"""
+                    end
+                    """
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,202))
         input = """func main() begin
                     string x <- "asdasd"
-                    end"""
+                    end
+                    """
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,203))
         input = """func main() begin
                     var x <- variable[][][]
-                    end"""
+                    end
+                    """
         expect = "Error on line 2 col 38: ]"
         self.assertTrue(TestParser.test(input,expect,204))
         input = """func main() begin
                     dynamic x <- false
-                    end"""
+                    end
+                    """
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,205))
         input = """func main() begin
                     number x[1,1,1] <- [[[[[[[[[]]]]]]]]]
-                    end"""
+                    end
+                    """
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,206))
         input = """func main() begin
                     dynamic x[1,1,1] <- [[[[[[[[[]]]]]]]]]
-                    end"""
+                    end
+                    """
         expect = "Error on line 2 col 29: ["
         self.assertTrue(TestParser.test(input,expect,207))
         input = """func main() begin
                     number x1 <- 1\nnumber x2 <- 2\nnumber x3 <- 3\nstring asdjn
                     bool x4 <- test()
-                    end"""
+                    end
+                    """
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,208))
         input = """func main() begin
                     number x[q,2,3] <- [[[1,2,56,7],[2,27,6],[2]],[[5367]],[[123]]]
-                    end"""
+                    end
+                    """
         expect = "Error on line 2 col 29: q"
         self.assertTrue(TestParser.test(input,expect,209))
         input = """func main() begin
                     number x[1,2,3] <- [[[1,2,q,7],[2,26,6],[2]],[[5367]],[[123]]]
-                    end"""
+                    end
+                    """
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,210))
     
@@ -68,155 +78,161 @@ class ParserSuite(unittest.TestCase):
         """Expressions - 10 testcases"""
         input = """func main() begin
                     x <- string1 ... string2
-                    end"""
+                    end
+                    """
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,211))
         input = """func main() begin
                     x <- string1 ... string2 ... string3
-                    end"""
+                    end
+                    """
         expect = "Error on line 2 col 45: ..."
         self.assertTrue(TestParser.test(input,expect,212))
         input = """func main() begin
                     x <- string1 == string2
-                    end"""
+                    end
+                    """
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,213))
         input = """func main() begin
                     x <- string1 == string2 == string3
-                    end"""
+                    end\n"""
         expect = "Error on line 2 col 44: =="
         self.assertTrue(TestParser.test(input,expect,214))
         input = """func main() begin
                     x <- string1 === string2
-                    end"""
+                    end\n"""
         expect = "Error on line 2 col 35: ="
         self.assertTrue(TestParser.test(input,expect,215))
         input = """func main() begin
                     x <- a = b
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,216))
         input = """func main() begin
                     x <- a = b != c
-                    end"""
+                    end\n"""
         expect = "Error on line 2 col 31: !="
         self.assertTrue(TestParser.test(input,expect,217))
         input = """func main() begin
                     x <- a and b or c
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,218))
         input = """func main() begin
                     x <- a + b - c
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,219))
         input = """func main() begin
                     x <- a * b / c % d
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,220))
         input = """func main() begin
                     x <- not a
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,221))
         input = """func main() begin
                     x <- not not a
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,222))
         input = """func main() begin
                     x <- -a
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,223))
         input = """func main() begin
                     x <- -------a
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,224))
         input = """func main() begin
                     x <- a[index]
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,225))
         input = """func main() begin
                     x <- a()[index, foo()]
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,226))
         input = """func main() begin
                     x <- a()[index, foo()[1]]
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,227))
         input = """func main() begin
                     x <- a(1=2)
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,228))
         input = """func main() begin
                     x <- (1+2)a
-                    end"""
+                    end\n"""
         expect = "Error on line 2 col 30: a"
         self.assertTrue(TestParser.test(input,expect,229))
         input = """func main() begin
                     x <- (a+b) < c + (d ... e) ... f
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,230))
         
     def test_loop_statement(self):
         input = """func main() begin
-                    break
-                    end"""
+                    end
+                """
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,231))
         input = """func main() begin
+                    break
                     continue
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,232))
         input = """func main() begin
                     continue
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,233))
         input = """func main() begin
                     begin
                     begin
                     end
-                    end"""
-        expect = "Error on line 5 col 23: <EOF>"
+                    end
+                    """
+        expect = "Error on line 6 col 20: <EOF>"
         self.assertTrue(TestParser.test(input,expect,234))
         input = """func main() begin
                     begin newline
-                    end"""
+                    end
+                """
         expect = "Error on line 2 col 26: newline"
         self.assertTrue(TestParser.test(input,expect,235))
         input = """func main() begin
                     for i_start until i_end by i_by begin 
                     arr[1,foo(3)] <- brr[2,c+-1]
                     end
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,236))
         input = """func main() begin
                     for i_start until i_end by i_by begin 
                     arr[1,foo(3)] <- brr[2,c+1] end
-                    end"""
+                    end\n"""
         expect = "Error on line 3 col 48: end"
         self.assertTrue(TestParser.test(input,expect,237))
         input = """func main() begin
                     for i_start until i_end by i_by for i_start until i_end by i_by arr[1,foo(3)] <- brr[2,c+1]
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,238))
         input = """func main() begin
                     for i_start until i_end by i_by fun(i)
                     x <- f()[1] = 1
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,239))
         
@@ -232,7 +248,7 @@ class ParserSuite(unittest.TestCase):
         self.assertTrue(TestParser.test(input,expect,242))
         input = """func function1(number a, var b)
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,243))
         input = """func function1(number a, dynamic b)"""
@@ -240,27 +256,27 @@ class ParserSuite(unittest.TestCase):
         self.assertTrue(TestParser.test(input,expect,244))
         input = """func function1(bool b) return b
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,245))
         input = """func function1(bool b) begin
                     end
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,246))
         input = """func function1(bool b) begin
                     return b
                     end
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,247))
         input = """func function1(bool b) begin
                     func invalid_func_decl()
                     end
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "Error on line 2 col 20: func"
         self.assertTrue(TestParser.test(input,expect,248))
         input = """func function1(bool b) begin
@@ -268,19 +284,19 @@ class ParserSuite(unittest.TestCase):
                     b <- false and true
                     end
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,249))
         input = """var x <- 1
                     func function1(bool b) return x
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,250))     
         input = """var x <- 1
                     func function1(bool b) func invalid()
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "Error on line 2 col 43: func"
         self.assertTrue(TestParser.test(input,expect,251))      
         input = """var x <- 1
@@ -290,7 +306,7 @@ class ParserSuite(unittest.TestCase):
                     return s
                     end
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,252))     
         input = """var x <- 1
@@ -300,7 +316,7 @@ class ParserSuite(unittest.TestCase):
                     return s
                     end
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,253))
         input = """var x <- 1
@@ -310,7 +326,7 @@ class ParserSuite(unittest.TestCase):
                     return s
                     end
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,254))
         input = """var x <- 1
@@ -322,7 +338,7 @@ class ParserSuite(unittest.TestCase):
                     end
                     end
                     func main() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,255))
         input = """var x <- 1
@@ -338,7 +354,7 @@ class ParserSuite(unittest.TestCase):
                     func function2(number a, string c)
                     func main() begin
                     end
-                    func function3() return"""
+                    func function3() return\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,257))
         input = """var x <- 1
@@ -347,7 +363,7 @@ class ParserSuite(unittest.TestCase):
                     func main() begin
                     end
                     func function3() begin
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,258))
         input = """var x <- 1
@@ -357,7 +373,7 @@ class ParserSuite(unittest.TestCase):
                     end
                     func function3() begin
                     return function1(1,2,3,4,5) + function2(1)
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,259))
         input = """var x <- 1
@@ -418,62 +434,62 @@ class ParserSuite(unittest.TestCase):
     def test_if_statement(self):
         input = """func main() begin
                     if expr stmt <- 1
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,265))
         input = """func main() begin
                     if expr 
                     
                     stmt <- 1
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,266))
         input = """func main() begin
                     elif expr stmt <- 1
-                    end"""
+                    end\n"""
         expect = "Error on line 2 col 20: elif"
         self.assertTrue(TestParser.test(input,expect,267))
         input = """func main() begin
                     if expr stmt <- 1 elif expr stmt <- 2
-                    end"""
+                    end\n"""
         expect = "Error on line 2 col 38: elif"
         self.assertTrue(TestParser.test(input,expect,268))
         input = """func main() begin
                     if expr stmt <- 1 
                     elif expr stmt <- 2
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,269))
         input = """func main() begin
                     else stmt <- 3
-                    end"""
+                    end\n"""
         expect = "Error on line 2 col 20: else"
         self.assertTrue(TestParser.test(input,expect,270))
         input = """func main() begin
                     elif expr stmt <- 2
                     else stmt <- 3
-                    end"""
+                    end\n"""
         expect = "Error on line 2 col 20: elif"
         self.assertTrue(TestParser.test(input,expect,271))
         input = """func main() begin
                     if expr stmt <- 1
                     elif expr stmt <- 2
                     else expr stmt <- 3
-                    end"""
+                    end\n"""
         expect = "Error on line 4 col 20: else"
         self.assertTrue(TestParser.test(input,expect,272))
         input = """func main() begin
                     if expr stmt <- 1
                     elif expr stmt <- 2
                     else stmt <- 3
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,273))
         input = """func main() begin
                     if expr if expr if expr if expr stmt <- 1111
                     elif expr stmt <- 2
                     else stmt <- 3
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,274))
         input = """func main() begin
@@ -501,7 +517,7 @@ class ParserSuite(unittest.TestCase):
                                 if expr2 stmt <- 31
                                 elif expr2 stmt <- 32
                                 else stmt <- 33
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,275))
         input = """func main() begin
@@ -520,7 +536,7 @@ class ParserSuite(unittest.TestCase):
                             else stmt <- 23
                         else stmt <- 23
                     else stmt <- 3
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,276))
         input = """func main() begin
@@ -530,7 +546,7 @@ class ParserSuite(unittest.TestCase):
                     elif expr1 stmt <- 4
                     elif expr1 stmt <- 5
                     else stmt <- 6
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,277))
         input = """func main() begin
@@ -546,13 +562,13 @@ class ParserSuite(unittest.TestCase):
                     end
                     elif expr1 stmt <- 2
                     else stmt <- 3
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,278))
         input = """var x <- 1
                 if expr1 stmt <- 1
                 func main() begin
-                end"""
+                end\n"""
         expect = "Error on line 2 col 16: if"
         self.assertTrue(TestParser.test(input,expect,279))
         input = """var x <- 1
@@ -563,7 +579,7 @@ class ParserSuite(unittest.TestCase):
                     end
                     elif e1 b<-1
                     else b <- 1
-                end"""
+                end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,280))
         input = """var x <- 1
@@ -572,7 +588,7 @@ class ParserSuite(unittest.TestCase):
                     else begin
                         for i until i by i if e1 stmt <- 2
                     end
-                end"""
+                end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,281))
         input = """var x <- 1
@@ -581,7 +597,7 @@ class ParserSuite(unittest.TestCase):
                     else begin
                         for i until i by i if e1 stmt <- 2
                     end
-                end"""
+                end\n"""
         expect = "Error on line 3 col 23: e1"
         self.assertTrue(TestParser.test(input,expect,282))
         input = """var x <- 1
@@ -590,7 +606,7 @@ class ParserSuite(unittest.TestCase):
                     elIf e2 begin
                         for i until i by i if e1 stmt <- 2
                     end
-                end"""
+                end\n"""
         expect = "Error on line 4 col 25: e2"
         self.assertTrue(TestParser.test(input,expect,283))
         input = """var x <- 1
@@ -600,7 +616,7 @@ class ParserSuite(unittest.TestCase):
                         for i until i by i if e1 stmt <- 2
                     end
                     elSe stmt <- 1
-                end"""
+                end\n"""
         expect = "Error on line 7 col 25: stmt"
         self.assertTrue(TestParser.test(input,expect,284))
         
@@ -615,7 +631,7 @@ class ParserSuite(unittest.TestCase):
                     end
                     i <- 0
                     for i until i < 100 by 1 writeString(fib[i])
-                    end"""
+                    end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,285))
         input = """func areDiv(number num1, number num2)
@@ -626,7 +642,7 @@ class ParserSuite(unittest.TestCase):
                     var num2 <- readNumber()
                     if(areDiv(num1, num2)) writeString("Yes")
                     else writeString("No")
-                end"""
+                end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,286))
         input = """func isPrime(number x)
@@ -645,7 +661,7 @@ class ParserSuite(unittest.TestCase):
                         if (x % i = 0) return false
                     end
                     return true
-                end"""
+                end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,287))
         input = """func main()
@@ -657,7 +673,7 @@ class ParserSuite(unittest.TestCase):
                 number b[5]
                 s <- r * r * 3.14
                 a[0] <- s
-                end"""
+                end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,288))
         input = """func main()
@@ -665,10 +681,10 @@ class ParserSuite(unittest.TestCase):
                 var i <- 0
                 for i until i >= 10 by 1
                 writeNumbe(i)
-                end"""
+                end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,289))
-        input = """func main() begin \n var i <- 0 \n for i until i >= 10 by 1 writeNumbe(i) \n end"""
+        input = """func main() begin \n var i <- 0 \n for i until i >= 10 by 1 writeNumbe(i) \n end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,290))
         input = """func finder(number array[100], number left, number right, number k) begin
@@ -686,33 +702,34 @@ class ParserSuite(unittest.TestCase):
                     var index <- finder(arr,0,4,2)
                     if(index = -1) writeString("No")
                     else writeNumber(index)
-                end"""
+                end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,291))
         input = """func main(number invalid)
                 begin
-                end"""
+                end\n"""
         expect = "Error on line 1 col 10: number"
         self.assertTrue(TestParser.test(input,expect,292))
-        input = """func main() return 1"""
-        expect = "Error on line 1 col 12: return"
+        input = """func main() return 1
+                """
+        expect = "successful"
         self.assertTrue(TestParser.test(input,expect,293))
         input = """func main()
                 begin
                 ## var i <- 0
                 for i until i >= 10 by 1
                 writeNumbe(i)
-                end"""
+                end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,294))
-        input = """func main() begin \n var i <- 0 \n ## for i until i >= 10 by 1 writeNumbe(i) \n end"""
+        input = """func main() begin \n var i <- 0 \n ## for i until i >= 10 by 1 writeNumbe(i) \n end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,295))
         input = """func main()
                 begin
                 if x stmt <- 1
                 elif x = a = a writeNumbe(i)
-                end"""
+                end\n"""
         expect = "Error on line 4 col 16: elif"
         self.assertTrue(TestParser.test(input,expect,296))
     
@@ -720,20 +737,20 @@ class ParserSuite(unittest.TestCase):
         input = """func main()
                 begin
                 string !qqq
-                end"""
+                end\n"""
         expect = "!"
         self.assertTrue(TestParser.test(input,expect,297))
         input = """func main()
                 begin
                 string c <- "Illegal Escape \\a"
-                end"""
+                end\n"""
         expect = "Illegal Escape \\" + "a"
         self.assertTrue(TestParser.test(input,expect,298))
     def test_lexer_error(self):
         input = """func main()
                 begin
                 string c <- "Unclosed String
-                end"""
+                end\n"""
         expect = "Unclosed String"
         self.assertTrue(TestParser.test(input,expect,299))
     
