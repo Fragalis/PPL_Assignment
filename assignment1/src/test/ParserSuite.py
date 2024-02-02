@@ -703,7 +703,7 @@ class ParserSuite(unittest.TestCase):
                     if(index = -1) writeString("No")
                     else writeNumber(index)
                 end\n"""
-        expect = "successful"
+        expect = "Error on line 12 col 27: ["
         self.assertTrue(TestParser.test(input,expect,291))
         input = """func main(number invalid)
                 begin

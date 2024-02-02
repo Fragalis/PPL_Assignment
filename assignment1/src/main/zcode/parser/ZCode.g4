@@ -155,9 +155,8 @@ primitive_type_declaration
 	;
 
 array_type_declaration
-	:	primitive_type identifier LBRACKET number_literal_list RBRACKET (ASSIGN array_value)?
+	:	primitive_type identifier LBRACKET number_literal_list RBRACKET
 	|	primitive_type identifier LBRACKET number_literal_list RBRACKET ASSIGN array_value
-	|	VAR	identifier LBRACKET number_literal_list RBRACKET ASSIGN array_value
 	;
 
 number_literal_list
