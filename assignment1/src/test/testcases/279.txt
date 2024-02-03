@@ -1,4 +1,4 @@
 var x <- 1
-                if expr1 stmt <- 1
+                if (expr1) stmt <- 1
                 func main() begin
                 end

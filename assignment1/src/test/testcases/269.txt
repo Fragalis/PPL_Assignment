@@ -1,4 +1,4 @@
 func main() begin
-                    if expr stmt <- 1 
+                    if (expr) stmt <- 1 
                     elif expr stmt <- 2
                     end

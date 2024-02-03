@@ -1,1 +1,1 @@
-Error on line 4 col 25: e2
+Error on line 4 col 30: begin

@@ -1,5 +1,5 @@
 func main()
                 begin
-                if x stmt <- 1
+                if (x) stmt <- 1
                 elif x = a = a writeNumbe(i)
                 end

@@ -256,19 +256,23 @@ if_statement
 	:	if_clause elif_clause_list else_clause
 	;
 if_clause
-	:	IF expression nullable_newline_list statement
+	:	IF conditional_expr nullable_newline_list statement
 	;
 elif_clause_list
 	:	elif_clause elif_clause_list
 	|
 	;
 elif_clause
-	:	ELIF expression nullable_newline_list statement
+	:	ELIF conditional_expr nullable_newline_list statement
 	;
 else_clause
 	:	ELSE nullable_newline_list statement
 	|
 	;
+conditional_expr
+	:	LPAREN expression RPAREN
+	;
+
 
 for_statement
 	:	FOR identifier UNTIL expression BY expression nullable_newline_list statement

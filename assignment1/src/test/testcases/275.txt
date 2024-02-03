@@ -1,26 +1,26 @@
 func main() begin
-                    if expr1
-                        if expr2 
-                            if expr2 
-                                if expr2 stmt <- 31
-                                elif expr2 stmt <- 32
+                    if (expr1)
+                        if (expr2) 
+                            if (expr2) 
+                                if (expr2) stmt <- 31
+                                elif (expr2) stmt <- 32
                                 else stmt <- 33
-                            elif expr2 stmt <- 32
+                            elif (expr2) stmt <- 32
                             else stmt <- 33
-                        elif expr2 stmt <- 12
+                        elif (expr2) stmt <- 12
                         else stmt <- 13
-                    elif expr1 
-                        if expr2 stmt <- 21
-                        elif expr2 stmt <- 22
+                    elif (expr1) 
+                        if (expr2) stmt <- 21
+                        elif (expr2) stmt <- 22
                         else stmt <- 23
                     else 
-                        if expr2 stmt <- 31
-                        elif expr2 stmt <- 32
+                        if (expr2) stmt <- 31
+                        elif (expr2) stmt <- 32
                         else
-                            if expr2 stmt <- 31
-                            elif expr2 stmt <- 32
+                            if (expr2) stmt <- 31
+                            elif (expr2) stmt <- 32
                             else 
-                                if expr2 stmt <- 31
-                                elif expr2 stmt <- 32
+                                if (expr2) stmt <- 31
+                                elif (expr2) stmt <- 32
                                 else stmt <- 33
                     end

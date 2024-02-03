@@ -1,5 +1,5 @@
 func main() begin
-                    if expr 
+                    if (expr) 
                     
                     stmt <- 1
                     end

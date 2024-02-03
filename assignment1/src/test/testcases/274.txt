@@ -1,5 +1,5 @@
 func main() begin
-                    if expr if expr if expr if expr stmt <- 1111
-                    elif expr stmt <- 2
+                    if (expr) if (expr) if (expr) if (expr) stmt <- 1111
+                    elif (expr) stmt <- 2
                     else stmt <- 3
                     end

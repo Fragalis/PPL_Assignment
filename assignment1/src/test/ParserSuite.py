@@ -43,7 +43,7 @@ class ParserSuite(unittest.TestCase):
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,205))
         input = """func main() begin
-                    number x[1,1,1] <- [[[[[[[[[]]]]]]]]]
+                    number x[1,1,1] <- [[[[[[[[[],[]]]]]]]]]
                     end
                     """
         expect = "successful"
@@ -435,10 +435,10 @@ class ParserSuite(unittest.TestCase):
         input = """func main() begin
                     if expr stmt <- 1
                     end\n"""
-        expect = "successful"
+        expect = "Error on line 2 col 23: expr"
         self.assertTrue(TestParser.test(input,expect,265))
         input = """func main() begin
-                    if expr 
+                    if (expr) 
                     
                     stmt <- 1
                     end\n"""
@@ -450,15 +450,15 @@ class ParserSuite(unittest.TestCase):
         expect = "Error on line 2 col 20: elif"
         self.assertTrue(TestParser.test(input,expect,267))
         input = """func main() begin
-                    if expr stmt <- 1 elif expr stmt <- 2
+                    if (expr) stmt <- 1 elif expr stmt <- 2
                     end\n"""
-        expect = "Error on line 2 col 38: elif"
+        expect = "Error on line 2 col 40: elif"
         self.assertTrue(TestParser.test(input,expect,268))
         input = """func main() begin
-                    if expr stmt <- 1 
+                    if (expr) stmt <- 1 
                     elif expr stmt <- 2
                     end\n"""
-        expect = "successful"
+        expect = "Error on line 3 col 20: elif"
         self.assertTrue(TestParser.test(input,expect,269))
         input = """func main() begin
                     else stmt <- 3
@@ -472,65 +472,65 @@ class ParserSuite(unittest.TestCase):
         expect = "Error on line 2 col 20: elif"
         self.assertTrue(TestParser.test(input,expect,271))
         input = """func main() begin
-                    if expr stmt <- 1
-                    elif expr stmt <- 2
+                    if (expr) stmt <- 1
+                    elif (expr) stmt <- 2
                     else expr stmt <- 3
                     end\n"""
         expect = "Error on line 4 col 20: else"
         self.assertTrue(TestParser.test(input,expect,272))
         input = """func main() begin
-                    if expr stmt <- 1
-                    elif expr stmt <- 2
+                    if (expr) stmt <- 1
+                    elif (expr) stmt <- 2
                     else stmt <- 3
                     end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,273))
         input = """func main() begin
-                    if expr if expr if expr if expr stmt <- 1111
-                    elif expr stmt <- 2
+                    if (expr) if (expr) if (expr) if (expr) stmt <- 1111
+                    elif (expr) stmt <- 2
                     else stmt <- 3
                     end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,274))
         input = """func main() begin
-                    if expr1
-                        if expr2 
-                            if expr2 
-                                if expr2 stmt <- 31
-                                elif expr2 stmt <- 32
+                    if (expr1)
+                        if (expr2) 
+                            if (expr2) 
+                                if (expr2) stmt <- 31
+                                elif (expr2) stmt <- 32
                                 else stmt <- 33
-                            elif expr2 stmt <- 32
+                            elif (expr2) stmt <- 32
                             else stmt <- 33
-                        elif expr2 stmt <- 12
+                        elif (expr2) stmt <- 12
                         else stmt <- 13
-                    elif expr1 
-                        if expr2 stmt <- 21
-                        elif expr2 stmt <- 22
+                    elif (expr1) 
+                        if (expr2) stmt <- 21
+                        elif (expr2) stmt <- 22
                         else stmt <- 23
                     else 
-                        if expr2 stmt <- 31
-                        elif expr2 stmt <- 32
+                        if (expr2) stmt <- 31
+                        elif (expr2) stmt <- 32
                         else
-                            if expr2 stmt <- 31
-                            elif expr2 stmt <- 32
+                            if (expr2) stmt <- 31
+                            elif (expr2) stmt <- 32
                             else 
-                                if expr2 stmt <- 31
-                                elif expr2 stmt <- 32
+                                if (expr2) stmt <- 31
+                                elif (expr2) stmt <- 32
                                 else stmt <- 33
                     end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,275))
         input = """func main() begin
-                    if expr1 stmt <- 1
-                    elif expr1 
-                        if expr2 stmt <- 21
-                        elif expr2 
-                            if expr2 stmt <- 21
-                            elif expr2 
-                                if expr2 stmt <- 21
-                                elif expr2 
-                                    if expr2 stmt <- 21
-                                    elif expr2 stmt <- 22
+                    if (expr1) stmt <- 1
+                    elif (expr1) 
+                        if (expr2) stmt <- 21
+                        elif (expr2) 
+                            if (expr2) stmt <- 21
+                            elif (expr2) 
+                                if (expr2) stmt <- 21
+                                elif (expr2) 
+                                    if (expr2) stmt <- 21
+                                    elif (expr2) stmt <- 22
                                     else stmt <- 23
                                 else stmt <- 23
                             else stmt <- 23
@@ -540,80 +540,80 @@ class ParserSuite(unittest.TestCase):
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,276))
         input = """func main() begin
-                    if expr1 stmt <- 1
-                    elif expr1 stmt <- 2
-                    elif expr1 stmt <- 3
-                    elif expr1 stmt <- 4
-                    elif expr1 stmt <- 5
+                    if (expr1) stmt <- 1
+                    elif (expr1) stmt <- 2
+                    elif (expr1) stmt <- 3
+                    elif (expr1) stmt <- 4
+                    elif (expr1) stmt <- 5
                     else stmt <- 6
                     end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,277))
         input = """func main() begin
-                    if expr1 for i until i_until by i_by begin
-                        if expr11 stmt <- 1
-                        elif expr11 stmt <- 1
-                        elif e 
-                            if q2 stmt <- 1
-                            elif expr11 stmt <- 1
-                            elif e stmt <- 1
-                            elif qweqwe stmt <- 1
-                        elif qweqwe stmt <- 1
+                    if (expr1) for i until i_until by i_by begin
+                        if (expr11) stmt <- 1
+                        elif (expr11) stmt <- 1
+                        elif (e) 
+                            if (q2) stmt <- 1
+                            elif (expr11) stmt <- 1
+                            elif (e) stmt <- 1
+                            elif (qweqwe) stmt <- 1
+                        elif (qweqwe) stmt <- 1
                     end
-                    elif expr1 stmt <- 2
+                    elif (expr1) stmt <- 2
                     else stmt <- 3
                     end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,278))
         input = """var x <- 1
-                if expr1 stmt <- 1
+                if (expr1) stmt <- 1
                 func main() begin
                 end\n"""
         expect = "Error on line 2 col 16: if"
         self.assertTrue(TestParser.test(input,expect,279))
         input = """var x <- 1
                 func main() begin
-                    if e1 stmt <- 1
-                    elif e1 begin
-                        for i until i by i if e1 stmt <- 2
+                    if (e1) stmt <- 1
+                    elif (e1) begin
+                        for i until i by i if (e1) stmt <- 2
                     end
-                    elif e1 b<-1
+                    elif (e1) b<-1
                     else b <- 1
                 end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,280))
         input = """var x <- 1
                 func main() begin
-                    if e1 stmt <- 1
+                    if (e1) stmt <- 1
                     else begin
-                        for i until i by i if e1 stmt <- 2
+                        for i until i by i if (e1) stmt <- 2
                     end
                 end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,281))
         input = """var x <- 1
                 func main() begin
-                    iF e1 stmt <- 1
+                    iF (e1) stmt <- 1
                     else begin
-                        for i until i by i if e1 stmt <- 2
+                        for i until i by i if (e1) stmt <- 2
                     end
                 end\n"""
-        expect = "Error on line 3 col 23: e1"
+        expect = "Error on line 3 col 28: stmt"
         self.assertTrue(TestParser.test(input,expect,282))
         input = """var x <- 1
                 func main() begin
-                    if e1 stmt <- 1
-                    elIf e2 begin
-                        for i until i by i if e1 stmt <- 2
+                    if (e1) stmt <- 1
+                    elIf (e2) begin
+                        for i until i by i if (e1) stmt <- 2
                     end
                 end\n"""
-        expect = "Error on line 4 col 25: e2"
+        expect = "Error on line 4 col 30: begin"
         self.assertTrue(TestParser.test(input,expect,283))
         input = """var x <- 1
                 func main() begin
-                    if e1 stmt <- 1
-                    elif e2 begin
-                        for i until i by i if e1 stmt <- 2
+                    if (e1) stmt <- 1
+                    elif (e2) begin
+                        for i until i by i if (e1) stmt <- 2
                     end
                     elSe stmt <- 1
                 end\n"""
@@ -727,7 +727,7 @@ class ParserSuite(unittest.TestCase):
         self.assertTrue(TestParser.test(input,expect,295))
         input = """func main()
                 begin
-                if x stmt <- 1
+                if (x) stmt <- 1
                 elif x = a = a writeNumbe(i)
                 end\n"""
         expect = "Error on line 4 col 16: elif"
