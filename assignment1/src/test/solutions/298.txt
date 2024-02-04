@@ -1,1 +1,1 @@
-Illegal Escape \a
+Error on line 3 col 16: string

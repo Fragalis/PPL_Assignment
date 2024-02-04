@@ -187,12 +187,10 @@ parameter
 
 primitive_parameter
 	:	primitive_type identifier
-	|	VAR	identifier
 	;
 
 array_parameter
 	:	primitive_type identifier LBRACKET number_literal_list RBRACKET
-	|	VAR	identifier LBRACKET number_literal_list RBRACKET
 	;
 
 function_full_declaration
@@ -306,8 +304,8 @@ argument_prime
 	|	argument
 	;
 argument
-	:	parameter
-	|	expression
+	:	expression
+	|	identifier LBRACKET number_literal_list RBRACKET
 	;
 
 block_statement

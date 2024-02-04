@@ -11,7 +11,6 @@ class ParserSuite(unittest.TestCase):
         self.assertTrue(TestParser.test(input,expect,200))
 
     def test_declarations(self):
-        """Declarations and Assignments - 10 testcases"""
         input = """func main() begin
                     number x <- 1
                     end
@@ -75,7 +74,6 @@ class ParserSuite(unittest.TestCase):
         self.assertTrue(TestParser.test(input,expect,210))
     
     def test_expressions(self):
-        """Expressions - 10 testcases"""
         input = """func main() begin
                     x <- string1 ... string2
                     end
@@ -249,7 +247,7 @@ class ParserSuite(unittest.TestCase):
         input = """func function1(number a, var b)
                     func main() begin
                     end\n"""
-        expect = "successful"
+        expect = "Error on line 1 col 25: var"
         self.assertTrue(TestParser.test(input,expect,243))
         input = """func function1(number a, dynamic b)"""
         expect = "Error on line 1 col 25: dynamic"
@@ -722,8 +720,13 @@ class ParserSuite(unittest.TestCase):
                 end\n"""
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,294))
-        input = """func main() begin \n var i <- 0 \n ## for i until i >= 10 by 1 writeNumbe(i) \n end\n"""
-        expect = "successful"
+        input = """func main()
+                begin
+                ## var i <- 0
+                for i until i >= 10 by 1
+                writeNumbe(number i)
+                end"""
+        expect = "Error on line 5 col 27: number"
         self.assertTrue(TestParser.test(input,expect,295))
         input = """func main()
                 begin

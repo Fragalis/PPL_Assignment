@@ -1,4 +1,4 @@
 func main() begin
-                    bool x <- true
+                    bool (x)[1] <- true
                     end
                     

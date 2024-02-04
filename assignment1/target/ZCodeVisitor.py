@@ -264,6 +264,11 @@ class ZCodeVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ZCodeParser#conditional_expr.
+    def visitConditional_expr(self, ctx:ZCodeParser.Conditional_exprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by ZCodeParser#for_statement.
     def visitFor_statement(self, ctx:ZCodeParser.For_statementContext):
         return self.visitChildren(ctx)
