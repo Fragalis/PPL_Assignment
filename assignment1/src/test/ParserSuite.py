@@ -456,7 +456,7 @@ class ParserSuite(unittest.TestCase):
                     if (expr) stmt <- 1 
                     elif expr stmt <- 2
                     end\n"""
-        expect = "Error on line 3 col 20: elif"
+        expect = "Error on line 3 col 25: expr"
         self.assertTrue(TestParser.test(input,expect,269))
         input = """func main() begin
                     else stmt <- 3
@@ -474,7 +474,7 @@ class ParserSuite(unittest.TestCase):
                     elif (expr) stmt <- 2
                     else expr stmt <- 3
                     end\n"""
-        expect = "Error on line 4 col 20: else"
+        expect = "Error on line 4 col 30: stmt"
         self.assertTrue(TestParser.test(input,expect,272))
         input = """func main() begin
                     if (expr) stmt <- 1
@@ -706,7 +706,7 @@ class ParserSuite(unittest.TestCase):
         input = """func main(number invalid)
                 begin
                 end\n"""
-        expect = "Error on line 1 col 10: number"
+        expect = "successful"
         self.assertTrue(TestParser.test(input,expect,292))
         input = """func main() return 1
                 """
@@ -733,7 +733,7 @@ class ParserSuite(unittest.TestCase):
                 if (x) stmt <- 1
                 elif x = a = a writeNumbe(i)
                 end\n"""
-        expect = "Error on line 4 col 16: elif"
+        expect = "Error on line 4 col 21: x"
         self.assertTrue(TestParser.test(input,expect,296))
     
     def test_err_lexer(self):

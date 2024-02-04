@@ -10,34 +10,19 @@ options {
 
 program
 	:	nullable_newline_list
-		pre_declaration_list
-		main_function 
-		post_declaration_list 
+		declaration_list
 		nullable_newline_list 
 		EOF
 	;
 
-pre_declaration_list
-	:	pre_declaration nullable_newline_list pre_declaration_list
+declaration_list
+	:	declaration nullable_newline_list declaration_list
 	|	
 	;
 
-pre_declaration
+declaration
 	:	variable_declaration
 	|	function_declaration
-	;
-
-main_function
-	:	FUNC 'main' LPAREN RPAREN nullable_newline_list function_body
-	;
-
-post_declaration_list
-	:	post_declaration nullable_newline_list post_declaration_list
-	|	
-	;
-
-post_declaration
-	:	variable_declaration
 	|	function_full_declaration
 	;
 
@@ -126,9 +111,10 @@ element_expr
 	:	identifier LBRACKET index_op_expr RBRACKET
 	|	function_call LBRACKET index_op_expr RBRACKET
 	;
+
 index_op_expr
 	:	expression COMMA index_op_expr
-	|	expression 
+	|	expression
 	;
 	
 term
@@ -388,7 +374,7 @@ COMMENT
 	;	
 
 WHITESPACE
-	: 	[ \t\r\f\b]+ 
+	: 	[ \t\f\r\b]+ 
 	-> 	skip
 	; 	// skip spaces and tabs
 

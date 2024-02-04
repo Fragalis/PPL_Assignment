@@ -14,28 +14,13 @@ class ZCodeVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by ZCodeParser#pre_declaration_list.
-    def visitPre_declaration_list(self, ctx:ZCodeParser.Pre_declaration_listContext):
+    # Visit a parse tree produced by ZCodeParser#declaration_list.
+    def visitDeclaration_list(self, ctx:ZCodeParser.Declaration_listContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by ZCodeParser#pre_declaration.
-    def visitPre_declaration(self, ctx:ZCodeParser.Pre_declarationContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by ZCodeParser#main_function.
-    def visitMain_function(self, ctx:ZCodeParser.Main_functionContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by ZCodeParser#post_declaration_list.
-    def visitPost_declaration_list(self, ctx:ZCodeParser.Post_declaration_listContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by ZCodeParser#post_declaration.
-    def visitPost_declaration(self, ctx:ZCodeParser.Post_declarationContext):
+    # Visit a parse tree produced by ZCodeParser#declaration.
+    def visitDeclaration(self, ctx:ZCodeParser.DeclarationContext):
         return self.visitChildren(ctx)
 
 
