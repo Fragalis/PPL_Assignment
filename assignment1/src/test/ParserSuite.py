@@ -168,9 +168,9 @@ class ParserSuite(unittest.TestCase):
         expect = "successful"
         self.assertTrue(TestParser.test(input,expect,228))
         input = """func main() begin
-                    x <- (1+2)a
+                    x <- a[1][1]
                     end\n"""
-        expect = "Error on line 2 col 30: a"
+        expect = "Error on line 2 col 29: ["
         self.assertTrue(TestParser.test(input,expect,229))
         input = """func main() begin
                     x <- (a+b) < c + (d ... e) ... f
