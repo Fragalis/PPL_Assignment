@@ -76,7 +76,7 @@ class UnaryOp(Expr):
         return f"UnaryOp({self.op}, {str(self.operand)})"
 
 
-class CallExpr(Expr):
+class Expr(Expr):
     # name: Id
     # args: List[Expr]
 

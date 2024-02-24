@@ -1,0 +1,4 @@
+var a <- 1
+                dynamic b <- 1
+                string a <- "Hello world"
+        
