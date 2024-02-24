@@ -184,9 +184,10 @@ class ASTGeneration(ZCodeVisitor):
 # 	|	function_call LBRACKET index_op_expr RBRACKET
 # 	;
     def visitElement_expr(self, ctx:ZCodeParser.Element_exprContext):
+        index_op = self.visit(ctx.index_op_expr())
         if ctx.identifier():
-            return Expr(self.visit(ctx.identifier()), self.visit(ctx.index_op_expr()))
-        return ArrayCell(self.visit(ctx.function_call(), self.visit(ctx.index_op_expr())))
+            return Expr(self.visit(ctx.identifier()), index_op)
+        return ArrayCell(self.visit(ctx.function_call()), index_op)
 
 # index_op_expr
 # 	:	expression COMMA index_op_expr
@@ -195,7 +196,7 @@ class ASTGeneration(ZCodeVisitor):
     def visitIndex_op_expr(self, ctx:ZCodeParser.Index_op_exprContext):
         if ctx.getChildCount() == 1:
             return [self.visit(ctx.expression())]
-        return [self.visit(ctx.expression())] + self.visit(ctx.expression())
+        return [self.visit(ctx.expression())] + self.visit(ctx.index_op_expr())
 
 # term
 # 	:	primitive_literals
@@ -211,7 +212,10 @@ class ASTGeneration(ZCodeVisitor):
             return self.visit(ctx.identifier())
         elif ctx.element_expr():
             return self.visit(ctx.element_expr())
-        
+        elif ctx.function_call():
+            return self.visit(ctx.function_call())
+        return self.visit(ctx.expression())
+    
 # variable_declaration
 # 	:	primitive_type_declaration
 # 	|	array_type_declaration

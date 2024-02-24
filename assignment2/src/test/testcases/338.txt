@@ -1,0 +1,4 @@
+func main() begin
+        a <- a[1] * b(c,"strlit")[1] + d
+        end
+        

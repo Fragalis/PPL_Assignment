@@ -1,0 +1,1 @@
+Program([VarDecl(Id(a), NumberType, None, BinaryOp(!=, BinaryOp(and, Id(a), Id(b)), BinaryOp(or, Id(c), Id(d))))])

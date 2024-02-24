@@ -1,0 +1,4 @@
+func main(number a[1], bool b) begin
+        var c <- "Hello World"
+        end
+        

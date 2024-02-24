@@ -1,0 +1,4 @@
+func a() begin
+        a[1] <- call()
+        end
+        
