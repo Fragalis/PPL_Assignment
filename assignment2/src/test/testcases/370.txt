@@ -1,0 +1,4 @@
+func main() begin
+        if (i = 1) for i until i by i i <- 1
+        end
+        

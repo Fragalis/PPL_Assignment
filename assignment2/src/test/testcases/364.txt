@@ -1,0 +1,12 @@
+func main() begin
+        for i until i by i begin
+            dynamic arr <- 1
+            for k until k by k begin
+            return caller(1)
+            end
+        end
+        for j until j by j begin
+            return caller(1)[1]
+        end
+        end
+        

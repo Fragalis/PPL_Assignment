@@ -1,0 +1,1 @@
+Program([FuncDecl(Id(main), [], Block([For(Id(i), Id(i), Id(i), Block([VarDecl(Id(arr), None, dynamic, NumLit(1.0)), For(Id(k), Id(k), Id(k), Block([Return(CallExpr(Id(caller), [NumLit(1.0)]))]))])), For(Id(j), Id(j), Id(j), Block([Return(ArrayCell(CallExpr(Id(caller), [NumLit(1.0)]), [NumLit(1.0)]))]))]))])

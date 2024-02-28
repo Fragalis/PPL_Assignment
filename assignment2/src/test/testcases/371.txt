@@ -1,0 +1,5 @@
+func main() begin
+        if (i = 1) if_stmt()
+        else else_stmt()
+        end
+        

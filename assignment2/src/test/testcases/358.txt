@@ -1,0 +1,6 @@
+func main() begin
+        for i until i by i begin
+        number x <- 1
+        end
+        end
+        

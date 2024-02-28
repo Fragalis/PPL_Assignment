@@ -1,0 +1,5 @@
+func main() begin
+        for i until i by i for j until j by j begin
+        end
+        end
+        

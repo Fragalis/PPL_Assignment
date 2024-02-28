@@ -902,3 +902,1040 @@ Program([
 ])  
 )
         self.assertTrue(TestAST.test(input, expect, 345))
+        
+    def test_for_statement_001(self):
+        input = """func main() begin
+        for i until i by i number a
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                VarDecl(
+                    Id("a"),
+                    NumberType(),
+                    None,
+                    None
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 346))
+        
+    def test_for_statement_002(self):
+        input = """func main() begin
+        for i until i by i number a <- 1
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                VarDecl(
+                    Id("a"),
+                    NumberType(),
+                    None,
+                    NumberLiteral(1.0)
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 347))
+        
+    def test_for_statement_003(self):
+        input = """func main() begin
+        for i until i by i a <- 1
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Assign(
+                    Id("a"),
+                    NumberLiteral(1.0)
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 348))
+        
+    def test_for_statement_004(self):
+        input = """func main() begin
+        for i until i by i break
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Break()
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 349))
+
+    def test_for_statement_005(self):
+        input = """func main() begin
+        for i until i by i continue
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Continue()
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 350))
+
+    def test_for_statement_006(self):
+        input = """func main() begin
+        for i until i by i return
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Return(None)
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 351))
+        
+    def test_for_statement_007(self):
+        input = """func main() begin
+        for i until i by i return i
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Return(Id("i"))
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 352))
+        
+    def test_for_statement_008(self):
+        input = """func main() begin
+        for i until i by i call()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                CallStmt(
+                    Id("call"),
+                    []
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 353))
+
+    def test_for_statement_009(self):
+        input = """func main() begin
+        for i until i by i call(i)
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                CallStmt(
+                    Id("call"),
+                    [
+                        Id("i")
+                    ]
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 354))
+        
+    def test_for_statement_010(self):
+        input = """func main() begin
+        for i until i by i call(i,i(i)[i])
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                CallStmt(
+                    Id("call"),
+                    [
+                        Id("i"),
+                        ArrayCell(
+                            CallExpr(
+                                Id("i"),
+                                [
+                                    Id("i")
+                                ]
+                            ),
+                            [
+                                Id("i")
+                            ]
+                        )
+                    ]
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 355))
+        
+    def test_for_statement_011(self):
+        input = """func main() begin
+        for i until i by i begin
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Block([])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 356))
+
+    def test_for_statement_012(self):
+        input = """func main() begin
+        for i until i by i begin
+        number x
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Block([
+                    VarDecl(
+                        Id("x"),
+                        NumberType(),
+                        None,
+                        None
+                    )
+                ])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 357))
+
+    def test_for_statement_013(self):
+        input = """func main() begin
+        for i until i by i begin
+        number x <- 1
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Block([
+                    VarDecl(
+                        Id("x"),
+                        NumberType(),
+                        None,
+                        NumberLiteral(1.0)
+                    )
+                ])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 358))
+        
+    def test_for_statement_014(self):
+        input = """func main() begin
+        for i until i by i begin
+        x <- 1
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Block([
+                    Assign(
+                        Id("x"),
+                        NumberLiteral(1.0)
+                    )
+                ])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 359))
+
+    def test_for_statement_015(self):
+        input = """func main() begin
+        for i until i by i begin
+        call(i)
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Block([
+                    CallStmt(
+                        Id("call"),
+                        [
+                            Id("i")
+                        ]
+                    )
+                ])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 360))
+        
+    def test_for_statement_016(self):
+        input = """func main() begin
+        for i until i by i for j until j by j begin
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                For(
+                    Id("j"),
+                    Id("j"),
+                    Id("j"),
+                    Block([])
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 361))
+        
+    def test_for_statement_017(self):
+        input = """func main() begin
+        for i until i by i begin
+        end
+        for j until j by j begin
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Block([])
+            ),
+            For(
+                Id("j"),
+                Id("j"),
+                Id("j"),
+                Block([])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 362))
+        
+    def test_for_statement_018(self):
+        input = """func main() begin
+        for i until i by i begin
+            return caller(1)
+        end
+        for j until j by j begin
+            return caller(1)[1]
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Block([
+                    Return(
+                        CallExpr(
+                            Id("caller"),
+                            [
+                                NumberLiteral(1.0)
+                            ]
+                        )
+                    )
+                ])
+            ),
+            For(
+                Id("j"),
+                Id("j"),
+                Id("j"),
+                Block([
+                    Return(
+                        ArrayCell(
+                            CallExpr(
+                                Id("caller"),
+                                [
+                                    NumberLiteral(1.0)
+                                ]
+                            ),
+                            [
+                                NumberLiteral(1.0)
+                            ]
+                        )
+                    )
+                ])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 363))
+        
+    def test_for_statement_019(self):
+        input = """func main() begin
+        for i until i by i begin
+            dynamic arr <- 1
+            for k until k by k begin
+            return caller(1)
+            end
+        end
+        for j until j by j begin
+            return caller(1)[1]
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            For(
+                Id("i"),
+                Id("i"),
+                Id("i"),
+                Block([
+                    VarDecl(
+                        Id("arr"),
+                        None,
+                        "dynamic",
+                        NumberLiteral(1.0)
+                    ),
+                    For(
+                        Id("k"),
+                        Id("k"),
+                        Id("k"),
+                        Block([
+                            Return(
+                                CallExpr(
+                                    Id("caller"),
+                                    [
+                                        NumberLiteral(1.0)
+                                    ]
+                                )
+                            )
+                        ])
+                    )
+                ])
+            ),
+            For(
+                Id("j"),
+                Id("j"),
+                Id("j"),
+                Block([
+                    Return(
+                        ArrayCell(
+                            CallExpr(
+                                Id("caller"),
+                                [
+                                    NumberLiteral(1.0)
+                                ]
+                            ),
+                            [
+                                NumberLiteral(1.0)
+                            ]
+                        )
+                    )
+                ])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 364))
+        
+    def test_if_statement_001(self):
+        input = """func main() begin
+        if (i = 1) i <- 1
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                Assign(
+                    Id("i"),
+                    NumberLiteral(1.0)
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 365))
+        
+    def test_simple_if_statement_001(self):
+        input = """func main() begin
+        if (i = 1) i <- 1
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                Assign(
+                    Id("i"),
+                    NumberLiteral(1.0)
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 365))
+
+    def test_simple_if_statement_002(self):
+        input = """func main() begin
+        if (i = 1) number i <- 1
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                VarDecl(
+                    Id("i"),
+                    NumberType(),
+                    None,
+                    NumberLiteral(1.0)
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 366))
+        
+    def test_simple_if_statement_003(self):
+        input = """func main() begin
+        if (i = 1) return
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                Return()
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 367))
+        
+    def test_simple_if_statement_003(self):
+        input = """func main() begin
+        if (i = 1) return callee(1)
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                Return(
+                    CallExpr(
+                        Id("callee"),
+                        [
+                            NumberLiteral(1.0)
+                        ]
+                    )
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 368))
+        
+    def test_simple_if_statement_004(self):
+        input = """func main() begin
+        if (i = 1) begin
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                Block([])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 369))
+        
+    def test_simple_if_statement_005(self):
+        input = """func main() begin
+        if (i = 1) for i until i by i i <- 1
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                For(
+                    Id("i"),
+                    Id("i"),
+                    Id("i"),
+                    Assign(
+                        Id("i"),
+                        NumberLiteral(1.0)
+                    )
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 370))
+        
+    def test_simple_if_statement_006(self):
+        input = """func main() begin
+        if (i = 1) if_stmt()
+        else else_stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                CallStmt(
+                    Id("if_stmt"),
+                    []
+                ),
+                [],
+                CallStmt(
+                    Id("else_stmt"),
+                    []
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 371))
+        
+    def test_simple_if_statement_007(self):
+        input = """func main() begin
+        if (i = 1) if_stmt()
+        elif (i = 2) elif_1_stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                CallStmt(
+                    Id("if_stmt"),
+                    []
+                ),
+                [
+                    tuple((
+                        BinaryOp(
+                            "=",
+                            Id("i"),
+                            NumberLiteral(2.0)
+                        ),
+                        CallStmt(
+                            Id("elif_1_stmt"),
+                            []
+                        )
+                    ))
+                ],
+                None
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 372))
+
+    def test_simple_if_statement_008(self):
+        input = """func main() begin
+        if (i = 1) if_stmt()
+        elif (i = 2) elif_1_stmt()
+        else else_stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                CallStmt(
+                    Id("if_stmt"),
+                    []
+                ),
+                [
+                    tuple((
+                        BinaryOp(
+                            "=",
+                            Id("i"),
+                            NumberLiteral(2.0)
+                        ),
+                        CallStmt(
+                            Id("elif_1_stmt"),
+                            []
+                        )
+                    ))
+                ],
+                CallStmt(
+                    Id("else_stmt"),
+                    []
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 373))
+        
+    def test_simple_if_statement_009(self):
+        input = """func main() begin
+        if (i = 1) if_stmt()
+        elif (i = 2) elif_1_stmt()
+        elif (i = 3) elif_2_stmt()
+        else else_stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(1.0)
+                ),
+                CallStmt(
+                    Id("if_stmt"),
+                    []
+                ),
+                [
+                    tuple((
+                        BinaryOp(
+                            "=",
+                            Id("i"),
+                            NumberLiteral(2.0)
+                        ),
+                        CallStmt(
+                            Id("elif_1_stmt"),
+                            []
+                        )
+                    )),
+                    tuple((
+                        BinaryOp(
+                            "=",
+                            Id("i"),
+                            NumberLiteral(3.0)
+                        ),
+                        CallStmt(
+                            Id("elif_2_stmt"),
+                            []
+                        )
+                    ))
+                ],
+                CallStmt(
+                    Id("else_stmt"),
+                    []
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 374))
+        
+    def test_complex_if_statement_001(self):
+        input = """func main() begin
+        if (i = 11) first_if_stmt()
+        if (i = 21) second_if_stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(11.0)
+                ),
+                CallStmt(
+                    Id("first_if_stmt"),
+                    []
+                ),
+                [],
+                None
+            ),
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(21.0)
+                ),
+                CallStmt(
+                    Id("second_if_stmt"),
+                    []
+                ),
+                [],
+                None
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 375))

@@ -446,7 +446,7 @@ class ASTGeneration(ZCodeVisitor):
 # 	:	IF conditional_expr nullable_newline_list statement
 # 	;
     def visitIf_clause(self, ctx:ZCodeParser.If_clauseContext):
-        return [self.visit(ctx.conditional_expr()), self.visit(ctx.statement())]
+        return tuple((self.visit(ctx.conditional_expr()), self.visit(ctx.statement())))
     
 # elif_clause_list
 # 	:	elif_clause elif_clause_list
@@ -463,12 +463,19 @@ class ASTGeneration(ZCodeVisitor):
     def visitElif_clause(self, ctx:ZCodeParser.Elif_clauseContext):
         return tuple((self.visit(ctx.conditional_expr()), self.visit(ctx.statement())))
 
-
+# else_clause
+# 	:	ELSE nullable_newline_list statement
+# 	|
+# 	;
     def visitElse_clause(self, ctx:ZCodeParser.Else_clauseContext):
-        return self.visitChildren(ctx)
+        return None if ctx.getChildCount() == 0 else self.visit(ctx.statement())
 
+# conditional_expr
+# 	:	LPAREN expression RPAREN
+# 	;
     def visitConditional_expr(self, ctx:ZCodeParser.Conditional_exprContext):
-        return self.visitChildren(ctx)
+        return self.visit(ctx.expression())
+
 
 # for_statement
 # 	:	FOR identifier UNTIL expression BY expression nullable_newline_list statement

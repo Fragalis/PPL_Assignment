@@ -1,0 +1,4 @@
+func main() begin
+        if (i = 1) return callee(1)
+        end
+        

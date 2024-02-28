@@ -1,0 +1,9 @@
+func main() begin
+        for i until i by i begin
+            return caller(1)
+        end
+        for j until j by j begin
+            return caller(1)[1]
+        end
+        end
+        

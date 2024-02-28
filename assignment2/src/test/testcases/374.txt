@@ -1,0 +1,7 @@
+func main() begin
+        if (i = 1) if_stmt()
+        elif (i = 2) elif_1_stmt()
+        elif (i = 3) elif_2_stmt()
+        else else_stmt()
+        end
+        
