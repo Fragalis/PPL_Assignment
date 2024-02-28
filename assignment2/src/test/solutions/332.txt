@@ -1,1 +1,1 @@
-Program([VarDecl(Id(a), NumberType, None, CallStmt(Id(caller), [Id(x)]))])
+Program([VarDecl(Id(a), NumberType, None, CallExpr(Id(caller), [Id(x)]))])

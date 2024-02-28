@@ -109,9 +109,11 @@ numeric_expr3
 
 element_expr
 	:	identifier LBRACKET index_op_expr RBRACKET
-	|	function_call LBRACKET index_op_expr RBRACKET
+	|	function_call_expr LBRACKET index_op_expr RBRACKET
 	;
-
+function_call_expr
+	:	function_call
+	;
 index_op_expr
 	:	expression COMMA index_op_expr
 	|	expression
@@ -121,7 +123,7 @@ term
 	:	primitive_literals
 	|	identifier
 	|	element_expr
-	|	function_call
+	|	function_call_expr
 	|	LPAREN expression RPAREN
 	;
 
@@ -233,7 +235,10 @@ assignment_statement
 	;
 assignee
 	:	identifier
-	|	element_expr
+	|	array_cell
+	;
+array_cell
+	:	identifier LBRACKET index_op_expr RBRACKET
 	;
 
 if_statement

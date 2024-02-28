@@ -182,12 +182,19 @@ class ASTGeneration(ZCodeVisitor):
 # element_expr
 # 	:	identifier LBRACKET index_op_expr RBRACKET
 # 	|	function_call LBRACKET index_op_expr RBRACKET
-# 	;
+# 	;   
     def visitElement_expr(self, ctx:ZCodeParser.Element_exprContext):
         index_op = self.visit(ctx.index_op_expr())
         if ctx.identifier():
-            return Expr(self.visit(ctx.identifier()), index_op)
-        return ArrayCell(self.visit(ctx.function_call()), index_op)
+            return ArrayCell(self.visit(ctx.identifier()), index_op)
+        return ArrayCell(self.visit(ctx.function_call_expr()), index_op)
+
+# function_call_expr
+# 	:	function_call
+# 	;
+    def visitFunction_call_expr(self, ctx:ZCodeParser.Function_call_exprContext):
+        func_call_expr = self.visit(ctx.function_call())
+        return CallExpr(func_call_expr[0], func_call_expr[1])
 
 # index_op_expr
 # 	:	expression COMMA index_op_expr
@@ -202,7 +209,7 @@ class ASTGeneration(ZCodeVisitor):
 # 	:	primitive_literals
 # 	|	identifier
 # 	|	element_expr
-# 	|	function_call
+# 	|	function_call_expr
 # 	|	LPAREN expression RPAREN
 # 	;
     def visitTerm(self, ctx:ZCodeParser.TermContext):
@@ -212,8 +219,8 @@ class ASTGeneration(ZCodeVisitor):
             return self.visit(ctx.identifier())
         elif ctx.element_expr():
             return self.visit(ctx.element_expr())
-        elif ctx.function_call():
-            return self.visit(ctx.function_call())
+        elif ctx.function_call_expr():
+            return self.visit(ctx.function_call_expr())
         return self.visit(ctx.expression())
     
 # variable_declaration
@@ -415,10 +422,16 @@ class ASTGeneration(ZCodeVisitor):
 
 # assignee
 # 	:	identifier
-# 	|	element_expr
+# 	|	array_cell
 # 	;
     def visitAssignee(self, ctx:ZCodeParser.AssigneeContext):
-        return self.visit(ctx.identifier()) if ctx.identifier() else self.visit(ctx.element_expr())
+        return self.visit(ctx.identifier()) if ctx.identifier() else self.visit(ctx.array_cell())
+    
+# array_cell
+# 	:	identifier LBRACKET index_op_expr RBRACKET
+# 	;
+    def visitArray_cell(self, ctx:ZCodeParser.Array_cellContext):
+        return ArrayCell(self.visit(ctx.identifier()), self.visit(ctx.index_op_expr()))
 
 # if_statement
 # 	:	if_clause elif_clause_list else_clause
@@ -433,7 +446,7 @@ class ASTGeneration(ZCodeVisitor):
 # 	:	IF conditional_expr nullable_newline_list statement
 # 	;
     def visitIf_clause(self, ctx:ZCodeParser.If_clauseContext):
-        return Tuple(self.visit(ctx.conditional_expr()), self.visit(ctx.statement()))
+        return [self.visit(ctx.conditional_expr()), self.visit(ctx.statement())]
     
 # elif_clause_list
 # 	:	elif_clause elif_clause_list
@@ -448,7 +461,7 @@ class ASTGeneration(ZCodeVisitor):
 # 	:	ELIF conditional_expr nullable_newline_list statement
 # 	;
     def visitElif_clause(self, ctx:ZCodeParser.Elif_clauseContext):
-        return Tuple(self.visit(ctx.conditional_expr()), self.visit(ctx.statement()))
+        return tuple((self.visit(ctx.conditional_expr()), self.visit(ctx.statement())))
 
 
     def visitElse_clause(self, ctx:ZCodeParser.Else_clauseContext):
@@ -492,13 +505,14 @@ class ASTGeneration(ZCodeVisitor):
 # 	:	function_call newline
 # 	;
     def visitFunction_call_statement(self, ctx:ZCodeParser.Function_call_statementContext):
-        return self.visit(ctx.function_call())
+        func_call_stmt = self.visit(ctx.function_call())
+        return CallStmt(func_call_stmt[0], func_call_stmt[1])
     
 # function_call
 # 	:	identifier LPAREN argument_list RPAREN
-# 	;
+# 	; 
     def visitFunction_call(self, ctx:ZCodeParser.Function_callContext):
-        return CallStmt(self.visit(ctx.identifier()), self.visit(ctx.argument_list()))
+        return [self.visit(ctx.identifier()), self.visit(ctx.argument_list())]
 
 # argument_list
 # 	:	argument_prime

@@ -224,6 +224,11 @@ class ZCodeVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by ZCodeParser#array_cell.
+    def visitArray_cell(self, ctx:ZCodeParser.Array_cellContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by ZCodeParser#if_statement.
     def visitIf_statement(self, ctx:ZCodeParser.If_statementContext):
         return self.visitChildren(ctx)

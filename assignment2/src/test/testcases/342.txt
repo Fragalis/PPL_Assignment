@@ -1,0 +1,7 @@
+func a() begin
+        number a <- 1
+        begin
+        number b <- 2
+        end
+        end
+        

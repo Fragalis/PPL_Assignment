@@ -1,0 +1,8 @@
+func a() begin
+        number a <- 1
+        begin
+        a <- 2
+        end
+        a <- arr[1] + 1
+        end
+        

@@ -70,33 +70,33 @@ expression				// CONCATENATION
 	;
 
 relational_expr			// COMPARISON
-	:	logical_expr1 	(	NUMBER_EQ 
-					  	| 	STRING_EQ 
-					  	|	NEQ
-					  	|	LT
-					  	|	GT
-					  	|	LTEQ
-					  	|	GTEQ
-					  	)
-		logical_expr1
+	:	logical_expr1   (	NUMBER_EQ 
+						| 	STRING_EQ 
+						|	NEQ
+						|	LT
+						|	GT
+						|	LTEQ
+						|	GTEQ
+						)
+	logical_expr1
 	|	logical_expr1
 	;
 
 logical_expr1 			// AND | OR
-	:	logical_expr1 ( AND | OR ) numeric_expr1
+	:	logical_expr1 (AND | OR) numeric_expr1
 	|	numeric_expr1
 	;
 
 numeric_expr1
-	:	numeric_expr1 ( PLUS | MINUS ) numeric_expr2
+	:	numeric_expr1 (PLUS | MINUS) numeric_expr2
 	|	numeric_expr2
 	;
 
 numeric_expr2
-	:	numeric_expr2 ( MUL | DIV | MOD ) logical_expr2
+	:	numeric_expr2 (MUL | DIV | MOD) logical_expr2
 	|	logical_expr2
 	;
-
+	
 logical_expr2
 	:	NOT logical_expr2
 	|	numeric_expr3
@@ -233,7 +233,10 @@ assignment_statement
 	;
 assignee
 	:	identifier
-	|	element_expr
+	|	array_cell
+	;
+array_cell
+	:	identifier LBRACKET index_op_expr RBRACKET
 	;
 
 if_statement

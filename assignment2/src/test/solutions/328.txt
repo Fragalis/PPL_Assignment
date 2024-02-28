@@ -1,1 +1,1 @@
-Program([VarDecl(Id(a), NumberType, None, CallExpr(Id(a), [CallExpr(Id(b), [BinaryOp(+, Id(c), Id(d))])]))])
+Program([VarDecl(Id(a), NumberType, None, ArrayCell(Id(a), [ArrayCell(Id(b), [BinaryOp(+, Id(c), Id(d))])]))])

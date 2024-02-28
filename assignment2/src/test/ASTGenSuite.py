@@ -398,7 +398,7 @@ Program([
         Id("a"), 
         NumberType(),
         None,
-        Expr(
+        ArrayCell(
             Id("a"),
             [NumberLiteral(1.0)]
         )
@@ -414,10 +414,10 @@ Program([
         Id("a"), 
         NumberType(),
         None,
-        Expr(
+        ArrayCell(
             Id("a"),
             [
-                Expr(
+                ArrayCell(
                     Id("b"),
                     [BinaryOp("+",Id("c"),Id("d"))]
                 )
@@ -436,7 +436,7 @@ Program([
         NumberType(),
         None,
         ArrayCell(
-            CallStmt(
+            CallExpr(
                 Id("a"),
                 []
             ),
@@ -455,7 +455,7 @@ Program([
         NumberType(),
         None,
         ArrayCell(
-            CallStmt(
+            CallExpr(
                 Id("a"),
                 [
                     Id("arg1"),
@@ -477,10 +477,10 @@ Program([
         NumberType(),
         None,
         ArrayCell(
-            CallStmt(
+            CallExpr(
                 Id("a"),
                 [
-                    Expr(
+                    ArrayCell(
                         Id("arg1"),
                         [NumberLiteral(1.0)]
                     ),
@@ -501,7 +501,7 @@ Program([
         Id("a"), 
         NumberType(),
         None,
-        CallStmt(
+        CallExpr(
             Id("caller"),
             [Id("x")]
         )
@@ -518,10 +518,10 @@ Program([
         None,
         "var",
         ArrayCell(
-            CallStmt(
+            CallExpr(
                 Id("caller"),
                 [
-                    Expr(
+                    ArrayCell(
                         Id("x"),
                         [
                             NumberLiteral(1.0),
@@ -551,14 +551,14 @@ Program([
             "+",
             BinaryOp(
                 "*",
-                Expr(
+                ArrayCell(
                     Id("a"),
                     [
                         NumberLiteral(1.0)
                     ]
                 ),
                 ArrayCell(
-                    CallStmt(
+                    CallExpr(
                         Id("b"),
                         [
                             Id("c"),
@@ -584,12 +584,14 @@ Program([
         Id("a"), 
         None,
         "var",
-        Expr(
+        ArrayCell(
             Id("a"),
             [
-                Expr(
+                ArrayCell(
                     Id("a"),
-                    [NumberLiteral(1.0)]
+                    [
+                        NumberLiteral(1.0)
+                    ]
                 ),
                 NumberLiteral(1.0)
             ]
@@ -650,14 +652,14 @@ Program([
                     "+",
                     BinaryOp(
                         "*",
-                        Expr(
+                        ArrayCell(
                             Id("a"),
                             [
                                 NumberLiteral(1.0)
                             ]
                         ),
                         ArrayCell(
-                            CallStmt(
+                            CallExpr(
                                 Id("b"),
                                 [
                                     Id("c"),
@@ -689,16 +691,16 @@ Program([
         [],
         Block([
             Assign(
-                Expr(
+                ArrayCell(
                     Id("a"),
                     [
                         NumberLiteral(1.0)
                     ]
                 ),            
-                Expr(
+                ArrayCell(
                     Id("a"),
                     [
-                        Expr(
+                        ArrayCell(
                             Id("a"),
                             [NumberLiteral(1.0)]
                         ),
@@ -724,13 +726,13 @@ Program([
         [],
         Block([
             Assign(
-                Expr(
+                ArrayCell(
                     Id("a"),
                     [
                         NumberLiteral(1.0)
                     ]
                 ),
-                CallStmt(
+                CallExpr(
                     Id("call"),
                     []
                 )
@@ -740,3 +742,163 @@ Program([
 ])  
 )
         self.assertTrue(TestAST.test(input, expect, 340))
+        
+    def test_block_statement_001(self):
+        input = """func a() begin
+        begin
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("a"),
+        [],
+        Block([
+            Block([
+            ])
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 341))
+        
+    def test_block_statement_002(self):
+        input = """func a() begin
+        number a <- 1
+        begin
+        number b <- 2
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("a"),
+        [],
+        Block([
+            VarDecl(Id("a"), NumberType(), None, NumberLiteral(1.0)),
+            Block([
+                VarDecl(Id("b"), NumberType(), None, NumberLiteral(2.0))
+            ])
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 342))
+        
+    def test_block_statement_003(self):
+        input = """func a() begin
+        number a <- 1
+        begin
+        a <- 2
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("a"),
+        [],
+        Block([
+            VarDecl(Id("a"), NumberType(), None, NumberLiteral(1.0)),
+            Block([
+                Assign(Id("a"), NumberLiteral(2.0))
+            ])
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 343))
+        
+    def test_block_statement_004(self):
+        input = """func a() begin
+        number a <- 1
+        begin
+        a <- 2
+        end
+        a <- arr[1] + 1
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("a"),
+        [],
+        Block([
+            VarDecl(Id("a"), NumberType(), None, NumberLiteral(1.0)),
+            Block([
+                Assign(Id("a"), NumberLiteral(2.0))
+            ]),
+            Assign(
+                Id("a"),
+                BinaryOp(
+                    "+",
+                    ArrayCell(
+                        Id("arr"),
+                        [NumberLiteral(1.0)]
+                    ),
+                    NumberLiteral(1.0)
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 344))
+        
+    def test_block_statement_005(self):
+        input = """func main() begin
+        number a <- 1
+        begin
+        a <- a(1,1)[1]
+        end
+        begin
+        a <- arr[1] + 1
+        end
+        a <- a
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            VarDecl(Id("a"), NumberType(), None, NumberLiteral(1.0)),
+            Block([
+                Assign(
+                    Id("a"), 
+                    ArrayCell(
+                        CallExpr(
+                            Id("a"),
+                            [
+                                NumberLiteral(1.0),
+                                NumberLiteral(1.0)
+                            ]
+                        ),
+                        [
+                            NumberLiteral(1.0)
+                        ]
+                    )
+                )
+            ]),
+            Block([
+                Assign(
+                    Id("a"),
+                    BinaryOp(
+                        "+",
+                        ArrayCell(
+                            Id("arr"),
+                            [NumberLiteral(1.0)]
+                        ),
+                        NumberLiteral(1.0)
+                    )
+                )  
+            ]),
+            Assign(Id("a"), Id("a"))
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 345))
