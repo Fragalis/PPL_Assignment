@@ -1,0 +1,12 @@
+func main() begin
+        ## Read Number
+        number x[10]
+        for i until i > 10 by 1 begin
+            x[i] <- readNumber()
+        end
+        for i until i > 10 by 1 begin
+            if (x[i] % 3 = 0) writeString("Troll")
+            if (x[i] % 5 = 0) writeString("Face")
+        end
+        end
+        

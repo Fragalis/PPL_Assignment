@@ -1,0 +1,8 @@
+func main() begin
+        ## Read Number
+        number x <- readNumber()
+        number y <- readNumber()
+        ## Write sum of x and y
+        writeNumber(x + y)
+        end
+        

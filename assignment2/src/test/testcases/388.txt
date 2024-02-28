@@ -1,0 +1,10 @@
+func main() begin
+        ## Read Number
+        number x <- readNumber()
+        var sum <- 0
+        for i until i > x by 1 begin
+            sum <- sum + i
+        end
+        writeNumber(sum)
+        end
+        

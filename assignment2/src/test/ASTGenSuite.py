@@ -1622,7 +1622,7 @@ Program([
 )
         self.assertTrue(TestAST.test(input, expect, 367))
         
-    def test_simple_if_statement_003(self):
+    def test_simple_if_statement_004(self):
         input = """func main() begin
         if (i = 1) return callee(1)
         end
@@ -1654,7 +1654,7 @@ Program([
 )
         self.assertTrue(TestAST.test(input, expect, 368))
         
-    def test_simple_if_statement_004(self):
+    def test_simple_if_statement_005(self):
         input = """func main() begin
         if (i = 1) begin
         end
@@ -1680,7 +1680,7 @@ Program([
 )
         self.assertTrue(TestAST.test(input, expect, 369))
         
-    def test_simple_if_statement_005(self):
+    def test_simple_if_statement_006(self):
         input = """func main() begin
         if (i = 1) for i until i by i i <- 1
         end
@@ -1713,7 +1713,7 @@ Program([
 )
         self.assertTrue(TestAST.test(input, expect, 370))
         
-    def test_simple_if_statement_006(self):
+    def test_simple_if_statement_007(self):
         input = """func main() begin
         if (i = 1) if_stmt()
         else else_stmt()
@@ -1747,7 +1747,7 @@ Program([
 )
         self.assertTrue(TestAST.test(input, expect, 371))
         
-    def test_simple_if_statement_007(self):
+    def test_simple_if_statement_008(self):
         input = """func main() begin
         if (i = 1) if_stmt()
         elif (i = 2) elif_1_stmt()
@@ -1790,7 +1790,7 @@ Program([
 )
         self.assertTrue(TestAST.test(input, expect, 372))
 
-    def test_simple_if_statement_008(self):
+    def test_simple_if_statement_009(self):
         input = """func main() begin
         if (i = 1) if_stmt()
         elif (i = 2) elif_1_stmt()
@@ -1837,7 +1837,7 @@ Program([
 )
         self.assertTrue(TestAST.test(input, expect, 373))
         
-    def test_simple_if_statement_009(self):
+    def test_simple_if_statement_010(self):
         input = """func main() begin
         if (i = 1) if_stmt()
         elif (i = 2) elif_1_stmt()
@@ -2463,3 +2463,238 @@ Program([
 ])
 )
         self.assertTrue(TestAST.test(input, expect, 385))
+        
+    def test_program_001(self):
+        input = """func main() begin
+        ## Read Number
+        number x <- readNumber()
+        ## Write Number
+        writeNumber(x)
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+        VarDecl(
+            Id("x"),
+            NumberType(),
+            None,
+            CallExpr(
+                Id("readNumber"),
+                []
+            )
+        ),
+        CallStmt(
+            Id("writeNumber"),
+            [Id("x")]
+        )
+    ])
+    )
+])
+        )
+        self.assertTrue(TestAST.test(input, expect, 386))
+        
+    def test_program_002(self):
+        input = """func main() begin
+        ## Read Number
+        number x <- readNumber()
+        number y <- readNumber()
+        ## Write sum of x and y
+        writeNumber(x + y)
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+        VarDecl(
+            Id("x"),
+            NumberType(),
+            None,
+            CallExpr(
+                Id("readNumber"),
+                []
+            )
+        ),
+        VarDecl(
+            Id("y"),
+            NumberType(),
+            None,
+            CallExpr(
+                Id("readNumber"),
+                []
+            )
+        ),
+        CallStmt(
+            Id("writeNumber"),
+            [BinaryOp("+",Id("x"),Id("y"))]
+        )
+    ])
+    )
+])
+        )
+        self.assertTrue(TestAST.test(input, expect, 387))
+        
+    def test_program_003(self):
+        input = """func main() begin
+        ## Read Number
+        number x <- readNumber()
+        var sum <- 0
+        for i until i > x by 1 begin
+            sum <- sum + i
+        end
+        writeNumber(sum)
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+        VarDecl(
+            Id("x"),
+            NumberType(),
+            None,
+            CallExpr(
+                Id("readNumber"),
+                []
+            )
+        ),
+        VarDecl(
+            Id("sum"),
+            None,
+            "var",
+            NumberLiteral(0.0)
+        ),
+        For(
+            Id("i"),
+            BinaryOp(">",Id("i"),Id("x")),
+            NumberLiteral(1.0),
+            Block([
+                Assign(
+                    Id("sum"),
+                    BinaryOp("+",Id("sum"),Id("i"))
+                )
+            ])
+        ),
+        CallStmt(
+            Id("writeNumber"),
+            [Id("sum")]
+        )
+    ])
+    )
+])
+        )
+        self.assertTrue(TestAST.test(input, expect, 388))
+        
+    def test_program_004(self):
+        input = """func main() begin
+        ## Read Number
+        number x[5] <- [1,2,3,4,5]
+        var sum <- 0
+        for i until i > x by 1 begin
+            sum <- sum + x[i]
+        end
+        writeNumber(sum)
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+        VarDecl(
+            Id("x"),
+            ArrayType([5.0], NumberType()),
+            None,
+            ArrayLiteral([
+                NumberLiteral(1.0),
+                NumberLiteral(2.0),
+                NumberLiteral(3.0),
+                NumberLiteral(4.0),
+                NumberLiteral(5.0)
+            ])
+        ),
+        VarDecl(
+            Id("sum"),
+            None,
+            "var",
+            NumberLiteral(0.0)
+        ),
+        For(
+            Id("i"),
+            BinaryOp(">",Id("i"),Id("x")),
+            NumberLiteral(1.0),
+            Block([
+                Assign(
+                    Id("sum"),
+                    BinaryOp("+",Id("sum"),ArrayCell(Id("x"),[Id("i")]))
+                )
+            ])
+        ),
+        CallStmt(
+            Id("writeNumber"),
+            [Id("sum")]
+        )
+    ])
+    )
+])
+        )
+        self.assertTrue(TestAST.test(input, expect, 389))
+        
+    def test_program_005(self):
+        input = """func main() begin
+        ## Read Number
+        number x[10]
+        for i until i > 10 by 1 begin
+            x[i] <- readNumber()
+        end
+        for i until i > 10 by 1 begin
+            if (x[i] % 3 = 0) writeString("Troll")
+            if (x[i] % 5 = 0) writeString("Face")
+        end
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+        VarDecl(
+            Id("x"),
+            ArrayType([10.0], NumberType()),
+            None,
+            None
+        ),
+        For(
+            Id("i"),
+            BinaryOp(">",Id("i"),NumberLiteral(10.0)),
+            NumberLiteral(1.0),
+            Block([
+                Assign(
+                    ArrayCell(Id("x"),[Id("i")]),
+                    CallExpr(Id("readNumber"),[])
+                )
+            ])
+        ),
+        For(
+            Id("i"),
+            BinaryOp(">",Id("i"),NumberLiteral(10.0)),
+            NumberLiteral(1.0),
+            Block([
+                If(
+                    BinaryOp(
+                        "=",
+                        BinaryOp("%",ArrayCell(Id("x"),[Id("i")]),NumberLiteral(3.0)),
+                        NumberLiteral(0.0)
+                    ),
+                    CallStmt(Id("writeString"),[StringLiteral("Troll")])
+                ),
+                If(
+                    BinaryOp(
+                        "=",
+                        BinaryOp("%",ArrayCell(Id("x"),[Id("i")]),NumberLiteral(5.0)),
+                        NumberLiteral(0.0)
+                    ),
+                    CallStmt(Id("writeString"),[StringLiteral("Face")])
+                )
+            ])
+        ),
+    ])
+    )
+])
+        )
+        self.assertTrue(TestAST.test(input, expect, 390))

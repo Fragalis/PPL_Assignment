@@ -1,0 +1,7 @@
+func main() begin
+        ## Read Number
+        number x <- readNumber()
+        ## Write Number
+        writeNumber(x)
+        end
+        
