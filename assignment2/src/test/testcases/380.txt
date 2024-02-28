@@ -1,0 +1,6 @@
+func main() begin
+        if (i = 11) if (i = 21) stmt()
+        else if_2_else_stmt()
+        else if_1_else_stmt()
+        end
+        

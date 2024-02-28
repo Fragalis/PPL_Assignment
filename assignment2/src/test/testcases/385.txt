@@ -1,0 +1,13 @@
+func main() begin
+        if (i = 1) 
+        begin
+            if (i = 11) stmt()
+            elif (i = 12) stmt()
+            elif (i = 13) stmt()
+        end
+        elif (i = 14) stmt()
+        elif (i = 2) stmt()
+        elif (i = 3) stmt()
+        elif (i = 4) stmt()
+        end
+        

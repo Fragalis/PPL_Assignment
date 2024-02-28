@@ -1939,3 +1939,527 @@ Program([
 ])  
 )
         self.assertTrue(TestAST.test(input, expect, 375))
+        
+    def test_complex_if_statement_002(self):
+        input = """func main() begin
+        if (i = 11) first_if_stmt()
+        if (i = 21) second_if_stmt()
+        elif (i = 22) if2_elif_1_stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(11.0)
+                ),
+                CallStmt(
+                    Id("first_if_stmt"),
+                    []
+                ),
+                [],
+                None
+            ),
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(21.0)
+                ),
+                CallStmt(
+                    Id("second_if_stmt"),
+                    []
+                ),
+                [
+                    tuple((
+                        BinaryOp(
+                            "=",
+                            Id("i"),
+                            NumberLiteral(22.0)
+                        ),
+                        CallStmt(
+                            Id("if2_elif_1_stmt"),
+                            []
+                        )
+                    ))
+                ],
+                None
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 376))
+        
+    def test_complex_if_statement_002(self):
+        input = """func main() begin
+        if (i = 11) first_if_stmt()
+        elif (i = 12) if1_elif_1_stmt()
+        if (i = 21) second_if_stmt()
+        elif (i = 22) if2_elif_1_stmt()
+        else if2_else_stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(11.0)
+                ),
+                CallStmt(
+                    Id("first_if_stmt"),
+                    []
+                ),
+                [
+                    tuple((
+                        BinaryOp(
+                            "=",
+                            Id("i"),
+                            NumberLiteral(12.0)
+                        ),
+                        CallStmt(
+                            Id("if1_elif_1_stmt"),
+                            []
+                        )
+                    ))    
+                ],
+                None
+            ),
+            If(
+                BinaryOp(
+                    "=",
+                    Id("i"),
+                    NumberLiteral(21.0)
+                ),
+                CallStmt(
+                    Id("second_if_stmt"),
+                    []
+                ),
+                [
+                    tuple((
+                        BinaryOp(
+                            "=",
+                            Id("i"),
+                            NumberLiteral(22.0)
+                        ),
+                        CallStmt(
+                            Id("if2_elif_1_stmt"),
+                            []
+                        )
+                    ))
+                ],
+                CallStmt(
+                    Id("if2_else_stmt"),
+                    []
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 377))
+        
+    def test_complex_if_statement_003(self):
+        input = """func main() begin
+        if (i = 11) begin
+        first_if_stmt()
+        if (i = 21) first_if_if_stmt()
+        elif (i = 22) first_if_elif_1_stmt()
+        end
+        else if1_else_stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("main"),
+        [],
+        Block([
+            If(
+                BinaryOp("=",Id("i"),NumberLiteral(11.0)),
+                Block([
+                    CallStmt(Id("first_if_stmt"),[]),
+                    If(
+                        BinaryOp("=",Id("i"),NumberLiteral(21.0)),
+                        CallStmt(Id("first_if_if_stmt"),[]),
+                        [
+                            tuple((
+                                BinaryOp("=",Id("i"),NumberLiteral(22.0)),
+                                CallStmt(Id("first_if_elif_1_stmt"),[])
+                            ))
+                        ],
+                        None
+                    )
+                ]),
+                [],
+                CallStmt(Id("if1_else_stmt"),[])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 378))
+        
+    def test_complex_if_statement_004(self):
+        input = """func main() begin
+        if (i = 11) if (i = 21) stmt()
+        elif (i = 22) stmt()
+        else if1_else_stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+            If(
+                BinaryOp("=",Id("i"),NumberLiteral(11.0)),
+                If(
+                    BinaryOp("=",Id("i"),NumberLiteral(21.0)),
+                    CallStmt(Id("stmt"),[]),
+                    [
+                        tuple((
+                            BinaryOp("=",Id("i"),NumberLiteral(22.0)),
+                            CallStmt(Id("stmt"),[])
+                        ))
+                    ],
+                    CallStmt(Id("if1_else_stmt"),[])
+                )
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 379))
+        
+    def test_complex_if_statement_005(self):
+        input = """func main() begin
+        if (i = 11) if (i = 21) stmt()
+        else if_2_else_stmt()
+        else if_1_else_stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+            If(
+                BinaryOp("=",Id("i"),NumberLiteral(11.0)),
+                If(
+                    BinaryOp("=",Id("i"),NumberLiteral(21.0)),
+                    CallStmt(Id("stmt"),[]),
+                    [],
+                    CallStmt(Id("if_2_else_stmt"),[])
+                ),
+                [],
+                CallStmt(Id("if_1_else_stmt"),[])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 380))
+        
+    def test_complex_if_statement_006(self):
+        input = """func main() begin
+        if (i = 1) if (i = 11) s11()
+        elif (i = 12) if (i = 121) s121()
+        elif (i = 122) s122()
+        else s12x()
+        else s1x()
+        else sx()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+            If(
+                BinaryOp("=",Id("i"),NumberLiteral(1.0)),
+                If(
+                    BinaryOp("=",Id("i"),NumberLiteral(11.0)),
+                    CallStmt(Id("s11"),[]),
+                    [
+                        tuple((
+                            BinaryOp("=",Id("i"),NumberLiteral(12.0)),
+                            If(
+                                BinaryOp("=",Id("i"),NumberLiteral(121.0)),
+                                CallStmt(Id("s121"),[]),
+                                [
+                                    tuple((
+                                        BinaryOp("=",Id("i"),NumberLiteral(122.0)),
+                                        CallStmt(Id("s122"),[])
+                                    ))
+                                ],
+                                CallStmt(Id("s12x"),[]),
+                            )
+                        ))
+                    ],
+                    CallStmt(Id("s1x"),[])
+                ),
+                [],
+                CallStmt(Id("sx"),[])
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 381))
+
+    def test_complex_if_statement_007(self):
+        input = """func main() begin
+        if (i = 1) 
+            if (i = 11) s11()
+            elif (i = 12) 
+                if (i = 121) s121()
+                elif (i = 122) s122()
+                else s12x()
+            else s1x()
+        elif (i = 2)
+            if (i = 21) s21()            
+            else s2x()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+            If(
+                BinaryOp("=",Id("i"),NumberLiteral(1.0)),
+                If(
+                    BinaryOp("=",Id("i"),NumberLiteral(11.0)),
+                    CallStmt(Id("s11"),[]),
+                    [
+                        tuple((
+                            BinaryOp("=",Id("i"),NumberLiteral(12.0)),
+                            If(
+                                BinaryOp("=",Id("i"),NumberLiteral(121.0)),
+                                CallStmt(Id("s121"),[]),
+                                [
+                                    tuple((
+                                        BinaryOp("=",Id("i"),NumberLiteral(122.0)),
+                                        CallStmt(Id("s122"),[])
+                                    ))
+                                ],
+                                CallStmt(Id("s12x"),[]),
+                            )
+                        ))
+                    ],
+                    CallStmt(Id("s1x"),[])
+                ),
+                [
+                    tuple((
+                        BinaryOp("=",Id("i"),NumberLiteral(2.0)),
+                        If(
+                            BinaryOp("=",Id("i"),NumberLiteral(21.0)),
+                            CallStmt(Id("s21"),[]),
+                            [],
+                            CallStmt(Id("s2x"),[])
+                        )
+                    ))
+                ],
+                None
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 382))
+
+    def test_complex_if_statement_008(self):
+        input = """func main() begin
+        if (i = 1) 
+            if (i = 11) stmt()
+            elif (i = 12) stmt()
+            else stmt()
+        elif (i = 2)
+            if (i = 21) stmt()
+            elif (i = 22) stmt()
+            else stmt()
+        else
+            if (i = x1) stmt()
+            elif (i = x2) stmt()
+            else stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+            If(
+                BinaryOp("=",Id("i"),NumberLiteral(1.0)),
+                If(
+                    BinaryOp("=",Id("i"),NumberLiteral(11.0)),
+                    CallStmt(Id("stmt"),[]),
+                    [
+                        tuple((
+                            BinaryOp("=",Id("i"),NumberLiteral(12.0)),
+                            CallStmt(Id("stmt"),[])
+                        ))
+                    ],
+                    CallStmt(Id("stmt"),[])
+                ),
+                [
+                    tuple((
+                        BinaryOp("=",Id("i"),NumberLiteral(2.0)),
+                        If(
+                            BinaryOp("=",Id("i"),NumberLiteral(21.0)),
+                            CallStmt(Id("stmt"),[]),
+                            [
+                                tuple((
+                                    BinaryOp("=",Id("i"),NumberLiteral(22.0)),
+                                    CallStmt(Id("stmt"),[])
+                                ))
+                            ],
+                            CallStmt(Id("stmt"),[])
+                        ),
+                    ))
+                ],
+                If(
+                    BinaryOp("=",Id("i"),Id("x1")),
+                    CallStmt(Id("stmt"),[]),
+                    [
+                        tuple((
+                            BinaryOp("=",Id("i"),Id("x2")),
+                            CallStmt(Id("stmt"),[])
+                        ))
+                    ],
+                    CallStmt(Id("stmt"),[])
+                ),
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 383))
+        
+    def test_complex_if_statement_009(self):
+        input = """func main() begin
+        if (i = 1) 
+            if (i = 11) stmt()
+            elif (i = 12) stmt()
+            else stmt()
+        elif (i = 2) stmt()
+        elif (i = 3) stmt()
+        elif (i = 4) stmt()
+        else
+            if (i = x1) stmt()
+            elif (i = x2) stmt()
+            else stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+            If(
+                BinaryOp("=",Id("i"),NumberLiteral(1.0)),
+                If(
+                    BinaryOp("=",Id("i"),NumberLiteral(11.0)),
+                    CallStmt(Id("stmt"),[]),
+                    [
+                        tuple((
+                            BinaryOp("=",Id("i"),NumberLiteral(12.0)),
+                            CallStmt(Id("stmt"),[])
+                        ))
+                    ],
+                    CallStmt(Id("stmt"),[])
+                ),
+                [
+                    tuple((
+                        BinaryOp("=",Id("i"),NumberLiteral(2.0)),
+                        CallStmt(Id("stmt"),[])
+                    )),
+                    tuple((
+                        BinaryOp("=",Id("i"),NumberLiteral(3.0)),
+                        CallStmt(Id("stmt"),[])
+                    )),
+                    tuple((
+                        BinaryOp("=",Id("i"),NumberLiteral(4.0)),
+                        CallStmt(Id("stmt"),[])
+                    ))
+                ],
+                If(
+                    BinaryOp("=",Id("i"),Id("x1")),
+                    CallStmt(Id("stmt"),[]),
+                    [
+                        tuple((
+                            BinaryOp("=",Id("i"),Id("x2")),
+                            CallStmt(Id("stmt"),[])
+                        ))
+                    ],
+                    CallStmt(Id("stmt"),[])
+                ),
+            )
+        ])
+    )
+])  
+)
+        self.assertTrue(TestAST.test(input, expect, 384))
+        
+    def test_complex_if_statement_010(self):
+        input = """func main() begin
+        if (i = 1) 
+        begin
+            if (i = 11) stmt()
+            elif (i = 12) stmt()
+            elif (i = 13) stmt()
+        end
+        elif (i = 14) stmt()
+        elif (i = 2) stmt()
+        elif (i = 3) stmt()
+        elif (i = 4) stmt()
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+            If(
+                BinaryOp("=",Id("i"),NumberLiteral(1.0)),
+                Block([
+                    If(
+                        BinaryOp("=",Id("i"),NumberLiteral(11.0)),
+                        CallStmt(Id("stmt"),[]),
+                        [
+                            tuple((
+                                BinaryOp("=",Id("i"),NumberLiteral(12.0)),
+                                CallStmt(Id("stmt"),[])
+                            )),
+                            tuple((
+                                BinaryOp("=",Id("i"),NumberLiteral(13.0)),
+                                CallStmt(Id("stmt"),[])
+                            ))
+                        ],
+                        None
+                    )
+                ]),
+                [
+                    tuple((
+                        BinaryOp("=",Id("i"),NumberLiteral(14.0)),
+                        CallStmt(Id("stmt"),[])
+                    )),
+                    tuple((
+                        BinaryOp("=",Id("i"),NumberLiteral(2.0)),
+                        CallStmt(Id("stmt"),[])
+                    )),
+                    tuple((
+                        BinaryOp("=",Id("i"),NumberLiteral(3.0)),
+                        CallStmt(Id("stmt"),[])
+                    )),
+                    tuple((
+                        BinaryOp("=",Id("i"),NumberLiteral(4.0)),
+                        CallStmt(Id("stmt"),[])
+                    ))
+                ],
+                None
+            )
+        ])
+    )
+])
+)
+        self.assertTrue(TestAST.test(input, expect, 385))

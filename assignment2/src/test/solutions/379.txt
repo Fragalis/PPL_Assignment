@@ -1,0 +1,1 @@
+Program([FuncDecl(Id(main), [], Block([If((BinaryOp(=, Id(i), NumLit(11.0)), If((BinaryOp(=, Id(i), NumLit(21.0)), CallStmt(Id(stmt), [])), [(BinaryOp(=, Id(i), NumLit(22.0)), CallStmt(Id(stmt), []))], CallStmt(Id(if1_else_stmt), []))), [], None)]))])

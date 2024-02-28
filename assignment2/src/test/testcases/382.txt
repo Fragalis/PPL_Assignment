@@ -1,0 +1,13 @@
+func main() begin
+        if (i = 1) 
+            if (i = 11) s11()
+            elif (i = 12) 
+                if (i = 121) s121()
+                elif (i = 122) s122()
+                else s12x()
+            else s1x()
+        elif (i = 2)
+            if (i = 21) s21()            
+            else s2x()
+        end
+        
