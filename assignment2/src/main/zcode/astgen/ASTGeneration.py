@@ -53,7 +53,7 @@ class ASTGeneration(ZCodeVisitor):
 # 	;
     def visitPrimitive_literals(self, ctx:ZCodeParser.Primitive_literalsContext):
         if ctx.NUMBER_L():    return NumberLiteral(float(ctx.NUMBER_L().getText()))
-        if ctx.BOOL_L():      return BooleanLiteral(ctx.BOOL_L().getText())
+        if ctx.BOOL_L():      return BooleanLiteral(1) if ctx.BOOL_L().getText() == "true" else BooleanLiteral(0)
         return StringLiteral(ctx.STRING_L().getText())
 
 # array_value

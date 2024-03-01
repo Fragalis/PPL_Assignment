@@ -1,0 +1,11 @@
+number num <- 0
+        func inc() begin
+        num <- num + 1
+        return num
+        end
+        func main() begin
+        var sum <- 0
+        for i until i = 10 by 1 sum <- sum + inc()*inc()
+        writeNumber(sum)
+        end
+        

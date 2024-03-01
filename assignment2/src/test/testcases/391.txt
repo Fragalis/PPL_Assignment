@@ -1,0 +1,10 @@
+number num <- 0
+        func inc() begin
+        num <- num + 1
+        return num
+        end
+        func main() begin
+        for i until i = 10 by 1 inc()
+        writeNumber(num)
+        end
+        

@@ -2696,5 +2696,179 @@ Program([
     ])
     )
 ])
-        )
+)
         self.assertTrue(TestAST.test(input, expect, 390))
+        
+    def test_program_006(self):
+        input = """number num <- 0
+        func inc() begin
+        num <- num + 1
+        return num
+        end
+        func main() begin
+        for i until i = 10 by 1 inc()
+        writeNumber(num)
+        end
+        """
+        expect = str(
+Program([
+    VarDecl(Id("num"),NumberType(),None,NumberLiteral(0.0)),
+    FuncDecl(Id("inc"),[],Block([
+        Assign(Id("num"),BinaryOp("+",Id("num"),NumberLiteral(1.0))),
+        Return(Id("num"))
+    ])),
+    FuncDecl(Id("main"),[],Block([
+        For(
+            Id("i"),
+            BinaryOp("=",Id("i"),NumberLiteral(10.0)),
+            NumberLiteral(1.0),
+            CallStmt(Id("inc"),[])    
+        ),
+        CallStmt(Id("writeNumber"),[Id("num")])
+    ]))
+])
+)
+        self.assertTrue(TestAST.test(input, expect, 391))
+        
+    def test_program_007(self):
+        input = """number num <- 0
+        func inc() begin
+        num <- num + 1
+        return num
+        end
+        func main() begin
+        var sum <- 0
+        for i until i = 10 by 1 sum <- sum + inc()*inc()
+        writeNumber(sum)
+        end
+        """
+        expect = str(
+Program([
+    VarDecl(Id("num"),NumberType(),None,NumberLiteral(0.0)),
+    FuncDecl(Id("inc"),[],Block([
+        Assign(Id("num"),BinaryOp("+",Id("num"),NumberLiteral(1.0))),
+        Return(Id("num"))
+    ])),
+    FuncDecl(Id("main"),[],Block([
+        VarDecl(Id("sum"),None,"var",NumberLiteral(0.0)),
+        For(
+            Id("i"),
+            BinaryOp("=",Id("i"),NumberLiteral(10.0)),
+            NumberLiteral(1.0),
+            Assign(
+                Id("sum"),
+                BinaryOp(
+                    "+",
+                    Id("sum"),
+                    BinaryOp("*",CallExpr(Id("inc"),[]),CallExpr(Id("inc"),[]))
+                )
+            )    
+        ),
+        CallStmt(Id("writeNumber"),[Id("sum")])
+    ]))
+])
+)
+        self.assertTrue(TestAST.test(input, expect, 392))
+        
+    def test_program_008(self):
+        input = """func areDivisors(number num1, number num2)
+        return ((num1 % num2 = 0) or (num2 % num1 = 0))
+        func main() begin
+        var num1 <- readNumber()
+        var num2 <- readNumber()
+        if (areDivisors(num1,num2)) writeString("Yes")
+        else writeString("No")
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(
+        Id("areDivisors"),
+        [
+            VarDecl(Id("num1"),NumberType()),
+            VarDecl(Id("num2"),NumberType())
+        ],
+        Return(
+            BinaryOp("or",
+                BinaryOp("=",
+                    BinaryOp("%",Id("num1"),Id("num2")),
+                    NumberLiteral(0.0)
+                ),
+                BinaryOp("=",
+                    BinaryOp("%",Id("num2"),Id("num1")),
+                    NumberLiteral(0.0)
+                )
+            )
+        )
+    ),
+    FuncDecl(Id("main"),[],Block([
+        VarDecl(Id("num1"),None,"var",CallExpr(Id("readNumber"),[])),
+        VarDecl(Id("num2"),None,"var",CallExpr(Id("readNumber"),[])),
+        If(
+            CallExpr(Id("areDivisors"),[Id("num1"),Id("num2")]),
+            CallStmt(Id("writeString"),[StringLiteral("Yes")]),
+            [],
+            CallStmt(Id("writeString"),[StringLiteral("No")])
+        )
+    ]))
+])
+)
+        self.assertTrue(TestAST.test(input, expect, 393))
+
+    def test_program_009(self):
+        input = """func isPrime(number x)
+        func main() begin
+        number x <- readNumber()
+        if (isPrime(x)) writeString("Yes")
+        else writeString("No")
+        end
+        func isPrime(number x) begin
+        if (x <= 1) return false
+        var i <- 2
+        for i until i > x/2 by 1 begin
+        if (x % i = 0) return false
+        end
+        return true
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("isPrime"),[VarDecl(Id("x"),NumberType())],None),
+    FuncDecl(Id("main"),[],Block([
+        VarDecl(Id("x"),NumberType(),None,CallExpr(Id("readNumber"),[])),
+        If(
+            CallExpr(Id("isPrime"),[Id("x")]),
+            CallStmt(Id("writeString"),[StringLiteral("Yes")]),
+            [],
+            CallStmt(Id("writeString"),[StringLiteral("No")])
+        )
+    ])),
+    FuncDecl(Id("isPrime"),[VarDecl(Id("x"),NumberType())],Block([
+        If(
+            BinaryOp("<=",Id("x"),NumberLiteral(1.0)),
+            Return(BooleanLiteral(False))
+        ),
+        VarDecl(Id("i"),None,"var",NumberLiteral(2.0)),
+        For(
+            Id("i"),
+            BinaryOp(
+                ">",
+                Id("i"),
+                BinaryOp("/",Id("x"),NumberLiteral(2.0))
+            ),
+            NumberLiteral(1.0),
+            Block([
+                If(
+                    BinaryOp(
+                        "=",
+                        BinaryOp("%",Id("x"),Id("i")),
+                        NumberLiteral(0.0)),
+                    Return(BooleanLiteral(False))
+                )
+            ]),
+        ),
+        Return(BooleanLiteral(True))
+    ]))
+])
+)
+        self.assertTrue(TestAST.test(input, expect, 394))
