@@ -2872,3 +2872,139 @@ Program([
 ])
 )
         self.assertTrue(TestAST.test(input, expect, 394))
+    
+    def test_program_010(self):
+        input = """func fibonacci_gen() begin
+        number fib[10]
+        fib[0] <- 1
+        fib[1] <- 1
+        var i <- 2
+        for i until i >= 10 by 1 fib[i] <- fib[i-1] + fib[i-2]
+        return fib
+        end
+        func main()
+        begin
+        writeNumber(fibonacci_gen()[9])
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("fibonacci_gen"),[],Block([
+        VarDecl(Id("fib"), ArrayType([10.0], NumberType()), None, None),
+        Assign(ArrayCell(Id("fib"),[NumberLiteral(0.0)]), NumberLiteral(1.0)),
+        Assign(ArrayCell(Id("fib"),[NumberLiteral(1.0)]), NumberLiteral(1.0)),
+        VarDecl(Id("i"), None, "var", NumberLiteral(2.0)),
+        For(
+            Id("i"), 
+            BinaryOp(">=", Id("i"), NumberLiteral(10.0)),
+            NumberLiteral(1.0),
+            Assign(
+                ArrayCell(Id("fib"),[Id("i")]), 
+                BinaryOp(
+                    "+",
+                    ArrayCell(Id("fib"),[BinaryOp("-", Id("i"), NumberLiteral(1.0))]),
+                    ArrayCell(Id("fib"),[BinaryOp("-", Id("i"), NumberLiteral(2.0))])
+                )
+            )
+        ),
+        Return(Id("fib"))
+    ])),
+    FuncDecl(Id("main"),[],Block([
+        CallStmt(Id("writeNumber"),[ArrayCell(CallExpr(Id("fibonacci_gen"),[]),[NumberLiteral(9.0)])])
+    ]))
+])
+)
+        self.assertTrue(TestAST.test(input, expect, 395))
+        
+    def test_program_011(self):
+        input = """
+        func main()
+        begin
+        writeNumber(readNumber())
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+        CallStmt(Id("writeNumber"),[CallExpr(Id("readNumber"),[])])
+    ]))
+])
+)
+        self.assertTrue(TestAST.test(input, expect, 396))
+        
+    def test_program_012(self):
+        input = """
+        func _() begin
+        dynamic __ <- __()[_]
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("_"),[],Block([
+        VarDecl(Id("__"), None, "dynamic", ArrayCell(CallExpr(Id("__"), []), [Id("_")]))
+    ]))
+])
+)
+        self.assertTrue(TestAST.test(input, expect, 397))
+        
+    def test_program_013(self):
+        input = """
+        func a(number a) return b(a)
+        func b(number b) return a(b)
+        func c(number c) return c
+        func main() begin
+        var x <- a(_) and b("c[-]")
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("a"), [VarDecl(Id("a"), NumberType())], Return(CallExpr(Id("b"),[Id("a")]))),
+    FuncDecl(Id("b"), [VarDecl(Id("b"), NumberType())], Return(CallExpr(Id("a"),[Id("b")]))),
+    FuncDecl(Id("c"), [VarDecl(Id("c"), NumberType())], Return(Id("c"))),
+    FuncDecl(Id("main"),[],Block([
+        VarDecl(Id("x"), None, "var", BinaryOp(
+            "and",
+            CallExpr(Id("a"), [Id("_")]),
+            CallExpr(Id("b"), [StringLiteral("c[-]")])
+            )
+        )
+    ]))
+])
+)
+        self.assertTrue(TestAST.test(input, expect, 398))
+        
+    def test_program_014(self):
+        input = """func main() begin
+        number a[10,10]
+        var sum <- 0
+        var i <- 0
+        for i until i >= 10 by 1 begin
+        var j <- 0
+        for j until j >= 10 by 1 begin
+        a[i,j] <- readNumber()
+        sum <- sum + a[i,j]
+        end
+        end
+        writeNumber(sum)
+        end
+        """
+        expect = str(
+Program([
+    FuncDecl(Id("main"),[],Block([
+        VarDecl(Id("a"), ArrayType([10.0, 10.0], NumberType())),
+        VarDecl(Id("sum"), None, "var", NumberLiteral(0.0)),
+        VarDecl(Id("i"), None, "var", NumberLiteral(0.0)),
+        For(Id("i"), BinaryOp(">=", Id("i"), NumberLiteral(10.0)), NumberLiteral(1.0), Block([
+            VarDecl(Id("j"), None, "var", NumberLiteral(0.0)),
+            For(Id("j"), BinaryOp(">=", Id("j"), NumberLiteral(10.0)), NumberLiteral(1.0), Block([
+                Assign(ArrayCell(Id("a"),[Id("i"), Id("j")]), CallExpr(Id("readNumber"), [])),
+                Assign(Id("sum"), BinaryOp("+", Id("sum"), ArrayCell(Id("a"),[Id("i"), Id("j")])))
+            ]))
+        ])),
+        CallStmt(Id("writeNumber"), [Id("sum")])
+    ]))
+])
+)
+        self.assertTrue(TestAST.test(input, expect, 399))
+        
+    

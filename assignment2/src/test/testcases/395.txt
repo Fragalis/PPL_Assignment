@@ -1,0 +1,13 @@
+func fibonacci_gen() begin
+        number fib[10]
+        fib[0] <- 1
+        fib[1] <- 1
+        var i <- 2
+        for i until i >= 10 by 1 fib[i] <- fib[i-1] + fib[i-2]
+        return fib
+        end
+        func main()
+        begin
+        writeNumber(fibonacci_gen()[9])
+        end
+        

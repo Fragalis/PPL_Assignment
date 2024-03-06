@@ -1,0 +1,7 @@
+{
+    "python.analysis.extraPaths": [
+        "./main/zcode/utils",
+        "./test",
+        "./main/zcode/parser"
+    ]
+}

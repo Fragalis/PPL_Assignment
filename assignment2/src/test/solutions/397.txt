@@ -1,0 +1,1 @@
+Program([FuncDecl(Id(_), [], Block([VarDecl(Id(__), None, dynamic, ArrayCell(CallExpr(Id(__), []), [Id(_)]))]))])

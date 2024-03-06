@@ -1,0 +1,14 @@
+func main() begin
+        number a[10,10]
+        var sum <- 0
+        var i <- 0
+        for i until i >= 10 by 1 begin
+        var j <- 0
+        for j until j >= 10 by 1 begin
+        a[i,j] <- readNumber()
+        sum <- sum + a[i,j]
+        end
+        end
+        writeNumber(sum)
+        end
+        
