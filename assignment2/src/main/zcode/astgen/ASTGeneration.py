@@ -541,12 +541,9 @@ class ASTGeneration(ZCodeVisitor):
 
 # argument
 # 	:	expression
-# 	|	identifier LBRACKET number_literal_list RBRACKET
 # 	;
     def visitArgument(self, ctx:ZCodeParser.ArgumentContext):
-        if ctx.getChildCount() == 1:
-            return self.visit(ctx.expression())
-        return 
+        return self.visit(ctx.expression())
 
 # block_statement
 # 	:	BEGIN newline_list statement_list END newline_list

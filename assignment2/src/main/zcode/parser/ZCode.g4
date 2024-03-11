@@ -296,7 +296,6 @@ argument_prime
 	;
 argument
 	:	expression
-	|	identifier LBRACKET number_literal_list RBRACKET
 	;
 
 block_statement

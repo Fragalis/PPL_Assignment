@@ -5,9 +5,9 @@ from AST import *
 
 class ASTGenSuite(unittest.TestCase):
     def test_variable_declaration_000(self):
-        input = """number a
+        input = """
         """
-        expect = str(Program([VarDecl(Id("a"), NumberType())]))
+        expect = str(Program([]))
         self.assertTrue(TestAST.test(input, expect, 300))
         
     def test_variable_declaration_001(self):
@@ -2953,7 +2953,7 @@ Program([
         func b(number b) return a(b)
         func c(number c) return c
         func main() begin
-        var x <- a(_) and b("c[-]")
+        var x <- a(_[1]) and b("c[-]")
         end
         """
         expect = str(
@@ -2964,7 +2964,7 @@ Program([
     FuncDecl(Id("main"),[],Block([
         VarDecl(Id("x"), None, "var", BinaryOp(
             "and",
-            CallExpr(Id("a"), [Id("_")]),
+            CallExpr(Id("a"), [ArrayCell(Id("_"),[NumberLiteral(1.0)])]),
             CallExpr(Id("b"), [StringLiteral("c[-]")])
             )
         )

@@ -3,6 +3,6 @@
         func b(number b) return a(b)
         func c(number c) return c
         func main() begin
-        var x <- a(_) and b("c[-]")
+        var x <- a(_[1]) and b("c[-]")
         end
         

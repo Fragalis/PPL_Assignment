@@ -1,6 +1,8 @@
-func main() begin
-        if (i = 11) first_if_stmt()
-        if (i = 21) second_if_stmt()
-        elif (i = 22) if2_elif_1_stmt()
-        end
-        
+
+var asdhahsdb <- asdas
+func main()
+begin
+    readNumber()
+    var a <- readNumber()
+end
+func sum()
