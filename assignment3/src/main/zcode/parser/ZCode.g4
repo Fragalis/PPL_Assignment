@@ -124,6 +124,7 @@ term
 	|	identifier
 	|	element_expr
 	|	function_call_expr
+	|	array_value
 	|	LPAREN expression RPAREN
 	;
 

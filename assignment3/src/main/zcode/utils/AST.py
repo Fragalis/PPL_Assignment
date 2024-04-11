@@ -1,4 +1,5 @@
-from abc import ABC, abstractmethod, ABCMeta
+from abc import ABC, ABCMeta
+from dataclasses import dataclass
 
 
 class AST(ABC):

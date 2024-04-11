@@ -1,2 +1,4 @@
-func main () return 1
+func main () begin
+        dynamic a <- [1]
+        end
         

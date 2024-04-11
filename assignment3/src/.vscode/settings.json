@@ -2,6 +2,8 @@
     "python.analysis.extraPaths": [
         "./main/zcode/utils",
         "./test",
-        "./main/zcode/parser"
+        "./main/zcode/parser",
+        "./main/zcode/astgen",
+        "./main/zcode/checker"
     ]
 }

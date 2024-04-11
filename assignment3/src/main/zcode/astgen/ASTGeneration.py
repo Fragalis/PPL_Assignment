@@ -210,6 +210,7 @@ class ASTGeneration(ZCodeVisitor):
 # 	|	identifier
 # 	|	element_expr
 # 	|	function_call_expr
+# 	|	array_value
 # 	|	LPAREN expression RPAREN
 # 	;
     def visitTerm(self, ctx:ZCodeParser.TermContext):
@@ -221,6 +222,8 @@ class ASTGeneration(ZCodeVisitor):
             return self.visit(ctx.element_expr())
         elif ctx.function_call_expr():
             return self.visit(ctx.function_call_expr())
+        elif ctx.array_value():
+            return self.visit(ctx.array_value())
         return self.visit(ctx.expression())
     
 # variable_declaration
