@@ -235,6 +235,7 @@ class ASTGeneration(ZCodeVisitor):
 
 # primitive_type_declaration
 # 	:	primitive_type identifier
+#   |   DYNAMIC identifier
 # 	|	primitive_type identifier ASSIGN expression
 # 	|	VAR	identifier ASSIGN expression
 # 	|	DYNAMIC	identifier ASSIGN expression
@@ -244,8 +245,8 @@ class ASTGeneration(ZCodeVisitor):
         
         # primitive_type identifier
         if ctx.getChildCount() == 2:
-            typer = self.visit(ctx.primitive_type())
-            return VarDecl(iden, typer)
+            typer = self.visit(ctx.primitive_type()) if ctx.primitive_type() else None
+            return VarDecl(iden, typer, ctx.DYNAMIC().getText() if ctx.DYNAMIC() else None)
         
         expr = self.visit(ctx.expression())
         # primitive_type identifier ASSIGN expression

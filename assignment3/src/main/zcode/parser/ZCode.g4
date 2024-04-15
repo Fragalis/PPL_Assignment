@@ -138,6 +138,7 @@ variable_declaration
 
 primitive_type_declaration
 	:	primitive_type identifier
+	|	DYNAMIC	identifier
 	|	primitive_type identifier ASSIGN expression
 	|	VAR	identifier ASSIGN expression
 	|	DYNAMIC	identifier ASSIGN expression

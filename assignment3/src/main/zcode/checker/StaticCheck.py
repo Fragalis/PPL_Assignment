@@ -122,10 +122,10 @@ class StaticChecker(BaseVisitor, Utils):
         l_type = ctx.varType
         if ctx.varInit is not None:
             r_type = self.visit(ctx.varInit, symtab)
+            # L AND R
             if l_type is not None and r_type is not None:
                 if (type(l_type) is not type(r_type)):
                     raise TypeMismatchInStatement(ctx)
-            
                 if type(l_type) is ArrayType:
                     if l_type.size[:len(r_type.size)] != r_type.size:
                         raise TypeMismatchInStatement(ctx)
@@ -137,11 +137,13 @@ class StaticChecker(BaseVisitor, Utils):
                         if type(r_type.eleType) is not type(l_type.eleType):
                             raise TypeMismatchInStatement(ctx)
                 symtab[0] += [Var(ctx.name.name, l_type)]
-        
+                
             else:
                 if r_type is None:
+                    # NOT L AND NOT R
                     if l_type is None:
                         raise TypeCannotBeInferred(ctx)
+                    # L AND NOT R
                     else:
                         if type(ctx.varInit) in [Id, CallExpr, ArrayLiteral]:
                             self.infer(ctx.varInit, l_type, symtab)
@@ -150,8 +152,12 @@ class StaticChecker(BaseVisitor, Utils):
                             symtab[0] += [Var(ctx.name.name, l_type)]
                         else:
                             raise TypeCannotBeInferred(ctx)
+                # NOT L AND R
                 else:
                     symtab[0] += [Var(ctx.name.name, r_type)]
+        # DYNAMIC
+        else:
+            symtab[0] += [Var(ctx.name.name, None)]
         self.arrayLiteral = []
         self.currentVariable = None
 
@@ -585,13 +591,19 @@ class StaticChecker(BaseVisitor, Utils):
     # lhs: Expr
     # exp: Expr
     def visitAssign(self, ctx:Assign, symtab):
-        r_type, l_type = self.visit(ctx.exp, symtab), self.visit(ctx.lhs)
+        r_type, l_type = self.visit(ctx.rhs, symtab), self.visit(ctx.lhs, symtab)
         if r_type is None and l_type is None:
             raise TypeCannotBeInferred(ctx)
-        elif r_type is None and l_type is not None:
-            if type(ctx.exp) not in [Id, CallExpr, ArrayLiteral]:
+        if r_type is not None and l_type is None:
+            if type(ctx.lhs) is not Id:
                 raise TypeCannotBeInferred(ctx)
-            self.infer(ctx.exp, r_type, symtab)
+            self.infer(ctx.lhs, r_type, symtab)
+            if not self.inferred:
+                raise TypeCannotBeInferred(ctx)
+        elif r_type is None and l_type is not None:
+            if type(ctx.rhs) not in [Id, CallExpr, ArrayLiteral]:
+                raise TypeCannotBeInferred(ctx)
+            self.infer(ctx.rhs, l_type, symtab)
             if not self.inferred:
                 raise TypeCannotBeInferred(ctx)
         else:
@@ -603,9 +615,9 @@ class StaticChecker(BaseVisitor, Utils):
                 if l_type.size[:len(r_type.size)] != r_type.size:
                     raise TypeMismatchInStatement(ctx)
                 if r_type.eleType is None:
-                    if type(ctx.exp) not in [Id, CallExpr, ArrayLiteral]:
+                    if type(ctx.rhs) not in [Id, CallExpr, ArrayLiteral]:
                         raise TypeCannotBeInferred(ctx)
-                    self.infer(ctx.exp, r_type, symtab)
+                    self.infer(ctx.rhs, r_type, symtab)
                     if not self.inferred:
                         raise TypeCannotBeInferred(ctx)
                     r_type = l_type

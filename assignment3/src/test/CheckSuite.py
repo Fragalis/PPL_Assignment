@@ -39,3 +39,33 @@ class CheckSuite(unittest.TestCase):
         """
         expect = ""
         self.assertTrue(TestChecker.test(input, expect, 403))
+
+    def test04(self):
+        input = """func main() begin
+        number a <- readNumber()
+        bool b <- readBool()
+        string c <- readString()
+        var d <- a
+        writeNumber(a)
+        writeBool(b)
+        writeString(c)
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 404))
+        
+    def test05(self):
+        input = """func main() begin
+        number a <- readNumber()
+        bool b <- readBool()
+        string c <- readString()
+        var d <- a
+        dynamic e
+        e <- b
+        writeNumber(a)
+        writeBool(b)
+        writeString(c)
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 405))
