@@ -115,7 +115,7 @@ class StaticChecker(BaseVisitor, Utils):
     # modifier: str = None  # None if there is no modifier
     # varInit: Expr = None  # None if there is no initial
     def visitVarDecl(self, ctx:VarDecl, symtab):
-        if self.lookup(ctx.name.name, symtab[0], lambda x: x.name):
+        if self.lookup(ctx.name.name, symtab[0], lambda x: x.name) is not None:
             raise Redeclared(Variable(), ctx.name.name)
 
         self.currentVariable = ctx.name.name
@@ -414,7 +414,7 @@ class StaticChecker(BaseVisitor, Utils):
     # idx: List[Expr]
     def visitArrayCell(self, ctx:ArrayCell, symtab):
         self.inferred = True
-        arr_typ = self.visit(ctx.arr)
+        arr_typ = self.visit(ctx.arr, symtab)
         if arr_typ is None:
             self.inferred = False
             return None

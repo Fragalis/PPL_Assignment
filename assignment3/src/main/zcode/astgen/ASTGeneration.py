@@ -264,14 +264,14 @@ class ASTGeneration(ZCodeVisitor):
 
 # array_type_declaration
 # 	:	primitive_type identifier LBRACKET number_literal_list RBRACKET
-# 	|	primitive_type identifier LBRACKET number_literal_list RBRACKET ASSIGN array_value
+# 	|	primitive_type identifier LBRACKET number_literal_list RBRACKET ASSIGN expression
 # 	;
     def visitArray_type_declaration(self, ctx:ZCodeParser.Array_type_declarationContext):
         array_type = ArrayType(self.visit(ctx.number_literal_list()), self.visit(ctx.primitive_type()))
         iden = self.visit(ctx.identifier())
         if ctx.getChildCount() == 5:
             return VarDecl(iden, array_type)
-        return VarDecl(iden, array_type, None, self.visit(ctx.array_value()))
+        return VarDecl(iden, array_type, None, self.visit(ctx.expression()))
 
 # number_literal_list
 # 	:	NUMBER_L COMMA number_literal_list

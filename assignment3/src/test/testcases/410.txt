@@ -1,0 +1,8 @@
+func main() begin
+        bool a[1,1] <- [[true]]
+        string b[1,1] <- [["hello world"]]
+        var c <- a
+        dynamic d
+        d <- a[1]
+        end
+        

@@ -145,7 +145,7 @@ def serializedATN():
         buf.write("\u011d\u011e\7\37\2\2\u011e\u0128\3\2\2\2\u011f\u0120")
         buf.write("\5\b\5\2\u0120\u0121\5\24\13\2\u0121\u0122\7\36\2\2\u0122")
         buf.write("\u0123\5\62\32\2\u0123\u0124\7\37\2\2\u0124\u0125\7\"")
-        buf.write("\2\2\u0125\u0126\5\f\7\2\u0126\u0128\3\2\2\2\u0127\u0119")
+        buf.write("\2\2\u0125\u0126\5\26\f\2\u0126\u0128\3\2\2\2\u0127\u0119")
         buf.write("\3\2\2\2\u0127\u011f\3\2\2\2\u0128\61\3\2\2\2\u0129\u012a")
         buf.write("\7\3\2\2\u012a\u012b\7 \2\2\u012b\u012e\5\62\32\2\u012c")
         buf.write("\u012e\7\3\2\2\u012d\u0129\3\2\2\2\u012d\u012c\3\2\2\2")
@@ -1958,8 +1958,8 @@ class ZCodeParser ( Parser ):
         def ASSIGN(self):
             return self.getToken(ZCodeParser.ASSIGN, 0)
 
-        def array_value(self):
-            return self.getTypedRuleContext(ZCodeParser.Array_valueContext,0)
+        def expression(self):
+            return self.getTypedRuleContext(ZCodeParser.ExpressionContext,0)
 
 
         def getRuleIndex(self):
@@ -2011,7 +2011,7 @@ class ZCodeParser ( Parser ):
                 self.state = 290
                 self.match(ZCodeParser.ASSIGN)
                 self.state = 291
-                self.array_value()
+                self.expression()
                 pass
 
 

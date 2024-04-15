@@ -1,0 +1,6 @@
+func main() begin
+        bool a[1,1] <- [[true]]
+        string b[1,1] <- [["hello world"]]
+        string c[1,1] <- b
+        end
+        

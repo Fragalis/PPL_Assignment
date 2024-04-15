@@ -1,0 +1,4 @@
+func main() begin
+        number a[2,2] <- [[2,2],[2,2]]
+        end
+        
