@@ -11,6 +11,8 @@ class Var:
     def __init__(self, name, typ) -> None:
         self.name = name
         self.typ = typ
+    def __str__(self):
+        return f"{str(self.name)}({str(self.typ)})"
         
 class Func:
     # name: str
@@ -22,6 +24,11 @@ class Func:
         self.param = param
         self.typ = typ
         self.body = body
+    def __str__(self):
+        params = ""
+        for x in self.param:
+            params = params + str(x)
+        return f"{str(self.name)}[{params}]({str(self.body)}) -> {str(self.typ)} "
 
 class StaticChecker(BaseVisitor, Utils):
     def __init__(self, ctx):
@@ -30,9 +37,9 @@ class StaticChecker(BaseVisitor, Utils):
             Func("readNumber", [], NumberType()),
             Func("readBool", [], BoolType()),
             Func("readString", [], StringType()),
-            Func("writeNumber", [Var("", NumberType())], VoidType()),
-            Func("writeBool", [Var("", BoolType())], VoidType()),
-            Func("writeString", [Var("", StringType())], VoidType()),
+            Func("writeNumber", [Var("arg", NumberType())], VoidType()),
+            Func("writeBool", [Var("arg", BoolType())], VoidType()),
+            Func("writeString", [Var("arg", StringType())], VoidType()),
         ]]
         self.currentVariable = None
         self.noEntryPoint = True
@@ -45,7 +52,6 @@ class StaticChecker(BaseVisitor, Utils):
         self.returnList = []
         self.arrayLiteral = []
         self.currentFunction = None
-        pass
 
     def infer(self, expr, typ, symtab):
         if type(expr) is Id:
@@ -82,13 +88,22 @@ class StaticChecker(BaseVisitor, Utils):
     def check(self):
         self.visitProgram(self.ctx, self.symtab)
 
+    def table_check(self, symtab):
+        for symlst in symtab:
+            strlst = "[\n"
+            for sym in symlst:
+                strlst += str(sym)
+                strlst += "\n"
+            strlst += "]"
+            print(strlst)
+
     # decl: List[Decl]  # empty list if there is no statement in block
     def visitProgram(self, ctx:Program, symtab):
         for decl in ctx.decl:
-            symtab = self.visit(decl, symtab)
+            self.visit(decl, symtab)
         if self.noBodyFunction != []:
             raise NoDefinition(self.noBodyFunction[0].name.name)
-        for func in symtab[-1]:
+        for func in symtab[0]:
             if type(func) is Func and func.name == "main" and type(func.typ) is VoidType and func.param == []:
                 self.noEntryPoint = False
                 break
@@ -102,40 +117,41 @@ class StaticChecker(BaseVisitor, Utils):
     def visitVarDecl(self, ctx:VarDecl, symtab):
         if self.lookup(ctx.name.name, symtab[0], lambda x: x.name):
             raise Redeclared(Variable(), ctx.name.name)
-    
+
         self.currentVariable = ctx.name.name
         l_type = ctx.varType
         if ctx.varInit is not None:
             r_type = self.visit(ctx.varInit, symtab)
-            if (l_type is None and r_type is None) or (type(l_type) is not type(r_type)):
-                raise TypeMismatchInStatement(ctx)
-            
-            if type(l_type) is ArrayType:
-                if l_type.size[:len(r_type.size)] != r_type.size:
+            if l_type is not None and r_type is not None:
+                if (type(l_type) is not type(r_type)):
                     raise TypeMismatchInStatement(ctx)
-                if r_type.eleType is None:
-                    self.infer(ctx.varInit, l_type, symtab)
-                    if self.inferred == False:
-                        raise TypeCannotBeInferred(ctx)
-                else:
-                    if type(r_type.eleType) is not type(l_type.eleType):
+            
+                if type(l_type) is ArrayType:
+                    if l_type.size[:len(r_type.size)] != r_type.size:
                         raise TypeMismatchInStatement(ctx)
-            symtab[0] += [Var(ctx.name.name, l_type)]
-        
-        else:
-            if r_type is None:
-                if l_type is None:
-                    raise TypeCannotBeInferred(ctx)
-                else:
-                    if type(ctx.varInit) in [Id, CallExpr, ArrayLiteral]:
+                    if r_type.eleType is None:
                         self.infer(ctx.varInit, l_type, symtab)
                         if self.inferred == False:
                             raise TypeCannotBeInferred(ctx)
-                        symtab[0] += [Var(ctx.name.name, l_type)]
                     else:
-                        raise TypeCannotBeInferred(ctx)
+                        if type(r_type.eleType) is not type(l_type.eleType):
+                            raise TypeMismatchInStatement(ctx)
+                symtab[0] += [Var(ctx.name.name, l_type)]
+        
             else:
-                symtab[0] += [Var(ctx.name.name, r_type)]
+                if r_type is None:
+                    if l_type is None:
+                        raise TypeCannotBeInferred(ctx)
+                    else:
+                        if type(ctx.varInit) in [Id, CallExpr, ArrayLiteral]:
+                            self.infer(ctx.varInit, l_type, symtab)
+                            if self.inferred == False:
+                                raise TypeCannotBeInferred(ctx)
+                            symtab[0] += [Var(ctx.name.name, l_type)]
+                        else:
+                            raise TypeCannotBeInferred(ctx)
+                else:
+                    symtab[0] += [Var(ctx.name.name, r_type)]
         self.arrayLiteral = []
         self.currentVariable = None
 
@@ -148,16 +164,14 @@ class StaticChecker(BaseVisitor, Utils):
         # if it's declared WITH the body
         if func is not None and func.body is not None and self.isCalled == False:
             raise Redeclared(Function(), ctx.name.name)
-        
         # Parameter in function Scope
         params = []
         for param in ctx.param:
             if self.lookup(param.name.name, params, lambda x: x.name) is not None:
                 raise Redeclared(Parameter(), param.name.name)
             params += [Var(param.name.name, self.visit(param.varType, symtab))]
-        
         symtab = [params] + symtab
-        
+
         # if Prototype
         if ctx.body is None:
             if self.isCalled == False:
@@ -165,13 +179,15 @@ class StaticChecker(BaseVisitor, Utils):
             symtab[-1] += [Func(ctx.name.name, params, None, None)]
         # if not Prototype
         else:
+            self.currentFunction = ctx.name.name
             for f in self.noBodyFunction:
                 if f.name.name == ctx.name.name:
                     self.noBodyFunction.remove(f)
-                    
+ 
         # Function check
         func_found = False
-        for func_sym in symtab[-1]:
+        for idx in range(len(symtab[-1])):
+            func_sym = symtab[-1][idx]
             # If function found
             if type(func_sym) is Func and func_sym.name == ctx.name.name:
                 func_found = True
@@ -186,31 +202,22 @@ class StaticChecker(BaseVisitor, Utils):
                     if type(l_type) is not type(r_type):
                         raise Redeclared(Function(), ctx.name.name)
                     # if both are array type
-                    if type(l_type) is ArrayType:
-                        # if unmatch element type
-                        if type(l_type.eleType) is not type(r_type.eleType):
-                            raise Redeclared(Function(), ctx.name.name)
-                        # if unmatch dimensions
-                        if len(l_type.size) != len(r_type.size):
-                            raise Redeclared(Function(), ctx.name.name)
-                        # if unmatch sizes
-                        for idx in range(len(l_type.size)):
-                            if l_type.size[idx] != r_type.size[idx]:
-                                raise Redeclared(Function(), ctx.name.name)
+                    if type(l_type) is ArrayType and (l_type.size != r_type.size or type(r_type.eleType) is not type(l_type.eleType)):
+                            raise TypeMismatchInStatement(ctx)
                 # If here means it's the same function
                 self.visit(ctx.body, symtab)
                 # return type
                 func_sym.typ = self.returnType if self.returnType else (VoidType() if self.returnList == [] else None)
+                symtab[-1][idx] = func_sym
                 break    
-            
-            # if first declaration:
-            if not func_found:
-                func_sym = Func(ctx.name.name, params, self.returnType, self.body)
-                self.visit(ctx.body, symtab)
-                ret_type = self.returnType if self.returnType else (VoidType() if self.returnList == [] else None)
-                if func_sym.typ is None:
-                    func_sym.typ = ret_type
-                symtab += [func_sym]
+        
+        # if first declaration:
+        if not func_found:
+            symtab[-1] += [Func(ctx.name.name, params, self.returnType, ctx.body)]
+            self.visit(ctx.body, symtab)
+            ret_type = self.returnType if self.returnType else (VoidType() if self.returnList == [] else None)
+            if symtab[-1][-1].typ is None:
+                symtab[-1][-1] = Func(ctx.name.name, params, ret_type, ctx.body)
         self.returnType = None
         self.hasReturn = False
         symtab = symtab[1:]
@@ -384,7 +391,6 @@ class StaticChecker(BaseVisitor, Utils):
                 
     # name: str
     def visitId(self, ctx:Id, symtab):
-        # number x <- x => x is undeclared
         if self.currentVariable is not None and ctx.name == self.currentVariable:
             raise Undeclared(Identifier(), ctx.name)
         
@@ -394,10 +400,7 @@ class StaticChecker(BaseVisitor, Utils):
             varsym = self.lookup(ctx.name, sym, lambda x: x.name)
             # if Id is found
             if varsym is not None and type(varsym) is Var:
-                # find and return the Id type
-                for var in sym:
-                    if var.name == ctx.name and type(var) is Var:
-                        return var.typ
+                return varsym.typ
         # Can't find Id => raise exception
         raise Undeclared(Identifier(), ctx.name)
                 
@@ -427,6 +430,7 @@ class StaticChecker(BaseVisitor, Utils):
             return arr_typ.eleType
         return ArrayType(arr_typ.size[len(ctx.idx):], arr_typ.eleType)
 
+    # stmt: List[Stmt]  # empty list if there is no statement in block
     def visitBlock(self, ctx:Block, symtab):
         symtab = [[]] + symtab
         for stmt in ctx.stmt:
@@ -584,8 +588,34 @@ class StaticChecker(BaseVisitor, Utils):
         r_type, l_type = self.visit(ctx.exp, symtab), self.visit(ctx.lhs)
         if r_type is None and l_type is None:
             raise TypeCannotBeInferred(ctx)
+        elif r_type is None and l_type is not None:
+            if type(ctx.exp) not in [Id, CallExpr, ArrayLiteral]:
+                raise TypeCannotBeInferred(ctx)
+            self.infer(ctx.exp, r_type, symtab)
+            if not self.inferred:
+                raise TypeCannotBeInferred(ctx)
+        else:
+            if type(l_type) is VoidType:
+                raise TypeMismatchInStatement(ctx)
+            if (type(l_type) is not type(r_type)):
+                raise TypeMismatchInStatement(ctx)
+            if type(l_type) is ArrayType:
+                if l_type.size[:len(r_type.size)] != r_type.size:
+                    raise TypeMismatchInStatement(ctx)
+                if r_type.eleType is None:
+                    if type(ctx.exp) not in [Id, CallExpr, ArrayLiteral]:
+                        raise TypeCannotBeInferred(ctx)
+                    self.infer(ctx.exp, r_type, symtab)
+                    if not self.inferred:
+                        raise TypeCannotBeInferred(ctx)
+                    r_type = l_type
+                else:
+                    if type(r_type.eleType) is not type(l_type.eleType) or l_type.size != r_type.size:
+                        raise TypeMismatchInStatement(ctx)
+        self.arrayLiteral = []
 
-
+    # name: Id
+    # args: List[Expr]  # empty list if there is no argument
     def visitCallStmt(self, ctx:CallStmt, symtab):
         self.inferred = True
         local_symtab = symtab[:-1]
@@ -599,6 +629,7 @@ class StaticChecker(BaseVisitor, Utils):
         
         if found.typ is not None and type(found.typ) is not VoidType:
             raise TypeMismatchInStatement(ctx)
+        
         if len(ctx.args) != len(found.param):
             raise TypeMismatchInStatement(ctx)
         

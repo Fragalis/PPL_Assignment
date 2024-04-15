@@ -1,0 +1,6 @@
+func main() begin
+        number a <- readNumber()
+        bool b <- readBool()
+        string c <- readString()
+        end
+        
