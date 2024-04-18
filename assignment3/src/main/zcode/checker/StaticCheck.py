@@ -59,6 +59,7 @@ class StaticChecker(BaseVisitor, Utils):
                 id_sym = self.lookup(expr.name, sym, lambda x: x.name)
                 if id_sym is not None and type(id_sym) is Var:
                     id_sym.typ = typ
+                    return
                     
         elif type(expr) in [CallStmt, CallExpr]:
             for func_sym in symtab[-1]:
@@ -74,6 +75,7 @@ class StaticChecker(BaseVisitor, Utils):
                         symtab
                     )
                     self.isCalled = False
+                    return
         
         else:
             if type(typ) is not ArrayType:

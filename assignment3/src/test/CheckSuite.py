@@ -444,3 +444,307 @@ class CheckSuite(unittest.TestCase):
         """
         expect = "Type Mismatch In Statement: Return(StringLit(str))"
         self.assertTrue(TestChecker.test(input, expect, 439))
+        
+    def test_if_0(self):
+        input = """
+        func main() begin
+        dynamic i
+        if (i) writeBool(true)
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 440))
+        
+    def test_if_1(self):
+        input = """
+        func main() begin
+        dynamic i1
+        dynamic i2
+        if (i1) begin
+            i2 <- readNumber()
+        end
+        elif (i2) begin
+            i1 <- true
+        end
+        end
+        """
+        expect = "Type Mismatch In Statement: If(Id(i1), Block([AssignStmt(Id(i2), CallExpr(Id(readNumber), []))])), [(Id(i2), Block([AssignStmt(Id(i1), BooleanLit(True))]))], None"
+        self.assertTrue(TestChecker.test(input, expect, 441))
+        
+    def test_if_2(self):
+        input = """
+        func main() begin
+        dynamic i1
+        dynamic i2
+        dynamic i3 <- i1 and i2
+        if (i1) begin
+            i2 <- readBool()
+        end
+        elif (i2) begin
+            i3 <- true
+        end
+        else
+            writeString("hello world")
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 442))
+
+    def test_if_3(self):
+        input = """
+        func main() begin
+        dynamic i1
+        dynamic i2
+        dynamic i3 <- i1 ... "string"
+        if (false) 
+            i2 <- i3 == i1
+        if (i2)
+            i3 <- i1
+        else
+            i2 <- (i3 == i1) or i2
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 443))
+        
+    def test_if_4(self):
+        input = """
+        func main() begin
+        dynamic i1
+        dynamic i2
+        if (i1 = i2) begin
+        end
+        elif (i1) begin
+        end
+        end
+        """
+        expect = "Type Mismatch In Statement: If(BinaryOp(=, Id(i1), Id(i2))), Block([])), [(Id(i1), Block([]))], None"
+        self.assertTrue(TestChecker.test(input, expect, 444))
+        
+    def test_for_0(self):
+        input = """
+        func main() begin
+        dynamic i
+        for i until true by 1 begin
+        end
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 445))
+        
+    def test_for_1(self):
+        input = """
+        func main() begin
+        dynamic i <- true
+        for i until true by 1 begin
+        end
+        end
+        """
+        expect = "Type Mismatch In Statement: For(Id(i), BooleanLit(True), NumLit(1.0), Block([]))"
+        self.assertTrue(TestChecker.test(input, expect, 446))
+        
+    def test_for_2(self):
+        input = """
+        func main() begin
+        dynamic i <- 1
+        for i until 10 by 1 begin
+        end
+        end
+        """
+        expect = "Type Mismatch In Statement: For(Id(i), NumLit(10.0), NumLit(1.0), Block([]))"
+        self.assertTrue(TestChecker.test(input, expect, 447))
+        
+    def test_for_3(self):
+        input = """
+        func main() begin
+        dynamic i <- 1
+        var j <- i = i
+        for i until true by j begin
+        end
+        end
+        """
+        expect = "Type Mismatch In Statement: For(Id(i), BooleanLit(True), Id(j), Block([]))"
+        self.assertTrue(TestChecker.test(input, expect, 448))
+        
+    def test_for_4(self):
+        input = """
+        func main() begin
+        dynamic i <- 1
+        var j <- i = i
+        for i until true by 1 begin
+            number i <- j + 1
+            j <- i
+        end
+        end
+        """
+        expect = "Type Mismatch In Expression: BinaryOp(+, Id(j), NumLit(1.0)))"
+        self.assertTrue(TestChecker.test(input, expect, 449))
+        
+    def test_scope_0(self):
+        input = """
+        var a <- 1
+        func main() begin
+            var a <- true
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 450))
+        
+    def test_scope_1(self):
+        input = """
+        var a <- 1
+        func f(string a)
+        func main() begin
+            var a <- true
+            if (f("true"))
+                number a <- 1
+        end
+        func f(string a) return true
+        """
+        expect = "Redeclared Variable: a)"
+        self.assertTrue(TestChecker.test(input, expect, 451))
+        
+    def test_scope_2(self):
+        input = """
+        var a <- 1
+        func f(string a)
+        func main() begin
+            var a <- true
+            if (f("true")) begin
+                number a <- 1
+            end
+        end
+        func f(string a) return true
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 452))
+        
+    def test_scope_3(self):
+        input = """
+        var a <- 1
+        func f(string a)
+        func main() begin
+            var a <- true
+            if (f("true")) begin
+                number a <- 1
+                for a until true by 1 begin
+                    var a <- "hello"
+                end
+            end
+        end
+        func f(string a) return true
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 453))
+        
+    def test_scope_4(self):
+        input = """
+        var a <- 1
+        func f(string a) begin
+            bool a <- true
+        end
+        func main() begin
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 454))
+            
+    def test_scope_5(self):
+        input = """
+        var a <- 1
+        func f(string a)
+        func main() begin
+        end
+        func f(string b) begin
+            bool b <- true
+            return a
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 455))
+        
+    def test_scope_6(self):
+        input = """
+        var a <- 1
+        func f(string a)
+        func main() begin
+            var b <- true
+            if (f("true")) begin
+                number c <- 1
+                for c until true by 1
+                    var c <- f("hi")
+            end
+        end
+        func f(string a) return true
+        """
+        expect = "Redeclared Variable: c)"
+        self.assertTrue(TestChecker.test(input, expect, 456))
+            
+    def test_scope_7(self):
+        input = """
+        dynamic x
+        func f(string a)
+        func main() begin
+            if (true) begin
+                dynamic x
+                x <- "hello"
+                f(x)
+            end
+            x <- 1
+            f(x)
+        end
+        func f(string b) begin
+            var b <- true
+            if (false) begin
+                number c <- 1
+                for c until true by 1 writeNumber(c)
+            end
+        end
+        """
+        expect = "Type Mismatch In Statement: CallStmt(Id(f), [Id(x)])"
+        self.assertTrue(TestChecker.test(input, expect, 457))
+        
+    def test_scope_8(self):
+        input = """
+        dynamic x
+        func f(string a)
+        func main() begin
+            if (true) begin
+                dynamic x
+                x <- "hello"
+                f(x)
+            end
+            elif (false) begin
+                f(x)
+            end
+            x <- 1
+            f(x)
+        end
+        func f(string b) begin
+            var b <- true
+            if (false) begin
+                number c <- 1
+                for c until true by 1 writeNumber(c)
+            end
+        end
+        """
+        expect = "Type Mismatch In Statement: AssignStmt(Id(x), NumLit(1.0))"
+        self.assertTrue(TestChecker.test(input, expect, 458))
+        
+    def test_scope_9(self):
+        input = """
+        dynamic x
+        func f(string a, number b)
+        func main() begin
+            x <- 1
+            if (true) begin
+                dynamic x
+                x <- "hello"
+                f(x, x)
+            end
+        end
+        func f(string b, number c) begin
+        end
+        """
+        expect = "Type Mismatch In Statement: CallStmt(Id(f), [Id(x), Id(x)])"
+        self.assertTrue(TestChecker.test(input, expect, 459))

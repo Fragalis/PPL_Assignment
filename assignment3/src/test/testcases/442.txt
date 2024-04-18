@@ -1,0 +1,15 @@
+
+        func main() begin
+        dynamic i1
+        dynamic i2
+        dynamic i3 <- i1 and i2
+        if (i1) begin
+            i2 <- readBool()
+        end
+        elif (i2) begin
+            i3 <- true
+        end
+        else
+            writeString("hello world")
+        end
+        

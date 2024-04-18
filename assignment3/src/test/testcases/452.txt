@@ -1,0 +1,11 @@
+
+        var a <- 1
+        func f(string a)
+        func main() begin
+            var a <- true
+            if (f("true")) begin
+                number a <- 1
+            end
+        end
+        func f(string a) return true
+        

@@ -1,0 +1,1 @@
+Type Mismatch In Statement: If(Id(i1), Block([AssignStmt(Id(i2), CallExpr(Id(readNumber), []))])), [(Id(i2), Block([AssignStmt(Id(i1), BooleanLit(True))]))], None

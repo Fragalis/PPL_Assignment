@@ -1,0 +1,10 @@
+
+        var a <- 1
+        func f(string a)
+        func main() begin
+        end
+        func f(string b) begin
+            bool b <- true
+            return a
+        end
+        

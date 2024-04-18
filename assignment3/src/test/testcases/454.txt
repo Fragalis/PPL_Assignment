@@ -1,0 +1,8 @@
+
+        var a <- 1
+        func f(string a) begin
+            bool a <- true
+        end
+        func main() begin
+        end
+        

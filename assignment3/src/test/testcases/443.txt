@@ -1,0 +1,13 @@
+
+        func main() begin
+        dynamic i1
+        dynamic i2
+        dynamic i3 <- i1 ... "string"
+        if (false) 
+            i2 <- i3 == i1
+        if (i2)
+            i3 <- i1
+        else
+            i2 <- (i3 == i1) or i2
+        end
+        

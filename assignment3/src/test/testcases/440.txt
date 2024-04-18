@@ -1,0 +1,6 @@
+
+        func main() begin
+        dynamic i
+        if (i) writeBool(true)
+        end
+        

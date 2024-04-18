@@ -1,0 +1,14 @@
+
+        dynamic x
+        func f(string a, number b)
+        func main() begin
+            x <- 1
+            if (true) begin
+                dynamic x
+                x <- "hello"
+                f(x, x)
+            end
+        end
+        func f(string b, number c) begin
+        end
+        

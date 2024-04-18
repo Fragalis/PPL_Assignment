@@ -1,0 +1,23 @@
+
+        dynamic x
+        func f(string a)
+        func main() begin
+            if (true) begin
+                dynamic x
+                x <- "hello"
+                f(x)
+            end
+            elif (false) begin
+                f(x)
+            end
+            x <- 1
+            f(x)
+        end
+        func f(string b) begin
+            var b <- true
+            if (false) begin
+                number c <- 1
+                for c until true by 1 writeNumber(c)
+            end
+        end
+        

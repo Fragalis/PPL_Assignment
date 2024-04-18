@@ -1,0 +1,13 @@
+
+        var a <- 1
+        func f(string a)
+        func main() begin
+            var b <- true
+            if (f("true")) begin
+                number c <- 1
+                for c until true by 1
+                    var c <- f("hi")
+            end
+        end
+        func f(string a) return true
+        

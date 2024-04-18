@@ -1,0 +1,7 @@
+
+        func main() begin
+        dynamic i <- true
+        for i until true by 1 begin
+        end
+        end
+        

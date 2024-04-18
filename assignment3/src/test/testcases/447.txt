@@ -1,0 +1,7 @@
+
+        func main() begin
+        dynamic i <- 1
+        for i until 10 by 1 begin
+        end
+        end
+        

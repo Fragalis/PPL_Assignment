@@ -1,0 +1,10 @@
+
+        func main() begin
+        dynamic i1
+        dynamic i2
+        if (i1 = i2) begin
+        end
+        elif (i1) begin
+        end
+        end
+        

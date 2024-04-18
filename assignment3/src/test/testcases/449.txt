@@ -1,0 +1,10 @@
+
+        func main() begin
+        dynamic i <- 1
+        var j <- i = i
+        for i until true by 1 begin
+            number i <- j + 1
+            j <- i
+        end
+        end
+        

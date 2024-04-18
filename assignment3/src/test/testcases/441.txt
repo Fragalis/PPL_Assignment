@@ -1,0 +1,12 @@
+
+        func main() begin
+        dynamic i1
+        dynamic i2
+        if (i1) begin
+            i2 <- readNumber()
+        end
+        elif (i2) begin
+            i1 <- true
+        end
+        end
+        
