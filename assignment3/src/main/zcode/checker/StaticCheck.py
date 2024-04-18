@@ -83,7 +83,7 @@ class StaticChecker(BaseVisitor, Utils):
                     if len(typ.size) == 1:
                         self.infer(val, typ.eleType, symtab)
                     else:
-                        self.infer(val, ArrayType(typ.size[1:], typ.eleType, symtab))
+                        self.infer(val, ArrayType(typ.size[1:], typ.eleType), symtab)
                 
     def check(self):
         self.visitProgram(self.ctx, self.symtab)
@@ -115,7 +115,8 @@ class StaticChecker(BaseVisitor, Utils):
     # modifier: str = None  # None if there is no modifier
     # varInit: Expr = None  # None if there is no initial
     def visitVarDecl(self, ctx:VarDecl, symtab):
-        if self.lookup(ctx.name.name, symtab[0], lambda x: x.name) is not None:
+        var = self.lookup(ctx.name.name, symtab[0], lambda x: x.name)
+        if var is not None and type(var) is Var:
             raise Redeclared(Variable(), ctx.name.name)
 
         self.currentVariable = ctx.name.name
@@ -390,12 +391,12 @@ class StaticChecker(BaseVisitor, Utils):
                     if arg_typ.size[:len(found.param[idx].typ.size)] != found.param[idx].typ.size:
                         raise TypeMismatchInExpression(ctx)
                     if arg_typ.eleType is None:
-                        if type(ctx.value) in [Id, CallExpr, ArrayLiteral]:
-                            self.infer(ctx.value, found.param[idx].typ, symtab)
-                            if self.inferred == False:
-                                return None
-                            arg_typ = found.param[idx].typ
-                        return None
+                        if type(ctx.value) not in [Id, CallExpr, ArrayLiteral]:
+                            return None
+                        self.infer(ctx.value, found.param[idx].typ, symtab)
+                        if self.inferred == False:
+                            return None
+                        arg_typ = found.param[idx].typ
                     if type(arg_typ.eleType) is not type(found.param[idx].typ.eleType) or arg_typ.size != found.param[idx].typ.size:
                         raise TypeMismatchInExpression(ctx)
         return found.typ
@@ -429,12 +430,12 @@ class StaticChecker(BaseVisitor, Utils):
         for cell in ctx.idx:
             typ = self.visit(cell, symtab)
             if typ is None:
-                if type(cell) in [Id, CallExpr]:
-                    self.infer(cell, NumberType(), symtab)
-                    if self.inferred == False:
-                        return None
-                    typ = NumberType()
-                return None
+                if type(cell) not in [Id, CallExpr]:
+                    return None
+                self.infer(cell, NumberType(), symtab)
+                if self.inferred == False:
+                    return None
+                typ = NumberType()
             if type(typ) is not NumberType:
                 raise TypeMismatchInExpression(ctx)
         if len(arr_typ.size) == len(ctx.idx):
@@ -465,7 +466,7 @@ class StaticChecker(BaseVisitor, Utils):
             cond_typ = BoolType()
         if type(cond_typ) is not BoolType:
             raise TypeMismatchInStatement(ctx)
-        self.visit(ctx.thenStmt)
+        self.visit(ctx.thenStmt, symtab)
         self.hasReturn = False
         for elif_expr, elif_stmt in ctx.elifStmt:
             cond_typ = self.visit(elif_expr, symtab)
@@ -478,7 +479,7 @@ class StaticChecker(BaseVisitor, Utils):
                 cond_typ = BoolType()
             if type(cond_typ) is not BoolType:
                 raise TypeMismatchInStatement(ctx)
-            self.visit(ctx.elif_stmt)
+            self.visit(elif_stmt, symtab)
         if ctx.elseStmt:
             self.visit(ctx.elseStmt, symtab)
         self.arrayLiteral = []
@@ -583,12 +584,12 @@ class StaticChecker(BaseVisitor, Utils):
                     if func.size[:len(ret_type.size)] != ret_type.size:
                         raise TypeMismatchInStatement(ctx)
                     if func.eleType is None:
-                        if type(ctx.value) in [Id, CallExpr, ArrayLiteral]:
-                            self.infer(ctx.value, ret_type, symtab)
-                            if self.inferred == False:
-                                return None
-                            func = ret_type
-                        return None
+                        if type(ctx.value) not in [Id, CallExpr, ArrayLiteral]:
+                            return None
+                        self.infer(ctx.value, ret_type, symtab)
+                        if self.inferred == False:
+                            return None
+                        func = ret_type
                     if type(func.eleType) is not type(ret_type.eleType) or func.size != ret_type.size:
                         raise TypeMismatchInStatement(ctx)
         self.arrayLiteral = []

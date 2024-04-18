@@ -1,0 +1,7 @@
+
+        var k <- 1
+        func f1() return k
+        func main() begin
+            writeNumber(f1())
+        end
+        

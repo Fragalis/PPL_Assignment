@@ -322,3 +322,125 @@ class CheckSuite(unittest.TestCase):
         """
         expect = "No Function Definition: main"
         self.assertTrue(TestChecker.test(input, expect, 429))
+        
+    def test_complex_funcdecl_0(self):
+        input = """
+        var k <- 1
+        func f1() return k
+        func main() begin
+            writeNumber(f1())
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 430))
+        
+    def test_complex_funcdecl_1(self):
+        input = """
+        func a() return 1
+        number a <- 1
+        func main() begin
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 431))
+        
+    def test_complex_funcdecl_2(self):
+        input = """
+        func a() return 1
+        func main() begin
+        var b <- a()
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 432))
+        
+    def test_complex_funcdecl_3(self):
+        input = """
+        func a(number a, number b[1]) begin
+            return a = b[1]
+        end
+        func main() begin
+        var b <- a(1, [1])
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 433))
+
+    def test_complex_funcdecl_4(self):
+        input = """
+        func a() begin
+            return
+        end
+        func main() begin
+        var b <- 1
+        a()
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 434))
+        
+    def test_complex_funcdecl_5(self):
+        input = """
+        func a() begin
+            return
+        end
+        func main() begin
+        var b <- 1
+        a()
+        writeNumber(a())
+        end
+        """
+        expect = "Type Mismatch In Expression: CallExpr(Id(a), [])"
+        self.assertTrue(TestChecker.test(input, expect, 435))
+        
+    def test_complex_funcdecl_6(self):
+        input = """
+        func a() begin
+            return
+        end
+        func main()
+        func main() begin
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 436))
+        
+    def test_complex_funcdecl_7(self):
+        input = """
+        func foo(number a)
+        func foo(string a, bool b) return a
+        func main()
+        begin 
+        end
+        """
+        expect = "Redeclared Function: foo)"
+        self.assertTrue(TestChecker.test(input, expect, 437))
+        
+    def test_complex_funcdecl_8(self):
+        input = """
+        number x
+        func foo()
+        begin
+        if (x = 1)
+            return true
+        else
+            return 1
+        end
+        func main()
+        begin
+        number num <- foo()
+        end
+        """
+        expect = "Type Mismatch In Statement: Return(NumLit(1.0))"
+        self.assertTrue(TestChecker.test(input, expect, 438))
+
+    def test_complex_funcdecl_9(self):
+        input = """
+        func foo()
+        func main() begin
+           number a <- foo()
+        end
+        func foo() return "str"
+        """
+        expect = "Type Mismatch In Statement: Return(StringLit(str))"
+        self.assertTrue(TestChecker.test(input, expect, 439))

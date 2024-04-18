@@ -1,0 +1,7 @@
+
+        func foo(number a)
+        func foo(string a, bool b) return a
+        func main()
+        begin 
+        end
+        

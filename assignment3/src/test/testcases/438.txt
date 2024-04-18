@@ -1,0 +1,14 @@
+
+        number x
+        func foo()
+        begin
+        if (x = 1)
+            return true
+        else
+            return 1
+        end
+        func main()
+        begin
+        number num <- foo()
+        end
+        

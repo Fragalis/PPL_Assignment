@@ -1,0 +1,7 @@
+
+        func foo()
+        func main() begin
+           number a <- foo()
+        end
+        func foo() return "str"
+        

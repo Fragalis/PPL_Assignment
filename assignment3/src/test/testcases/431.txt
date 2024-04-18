@@ -1,0 +1,6 @@
+
+        func a() return 1
+        number a <- 1
+        func main() begin
+        end
+        

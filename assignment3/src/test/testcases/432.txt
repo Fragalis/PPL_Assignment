@@ -1,0 +1,6 @@
+
+        func a() return 1
+        func main() begin
+        var b <- a()
+        end
+        
