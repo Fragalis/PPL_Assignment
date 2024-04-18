@@ -1,6 +1,7 @@
 func main() begin
-        number a[1,1] <- [[1]]
-        bool b[1,1] <- [[true]]
-        string c[1,1] <- [["hello world"]]
+        var a <- readBool()
+        number b[1,1] <- [[2]]
+        dynamic arr
+        arr <- b[1] + [readNumber()]
         end
         

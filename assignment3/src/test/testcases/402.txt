@@ -1,6 +1,6 @@
 func main() begin
-        number a <- readNumber()
-        bool b <- readBool()
-        string c <- readString()
+        number a <- 1 + 1
+        bool b <- true and a
+        string c <- "hello" ... "world"
         end
         

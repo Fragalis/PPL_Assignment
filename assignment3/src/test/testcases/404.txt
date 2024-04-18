@@ -1,10 +1,6 @@
 func main() begin
-        number a <- readNumber()
-        bool b <- readBool()
-        string c <- readString()
-        var d <- a
-        writeNumber(a)
-        writeBool(b)
-        writeString(c)
+        dynamic a
+        a <- 1
+        bool b <- true and a
         end
         

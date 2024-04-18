@@ -1,4 +1,6 @@
 func main() begin
-        number a[1] <- [1]
+        var a <- 1
+        number b <- a
+        dynamic c <- b + a
         end
         

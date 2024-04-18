@@ -1,0 +1,4 @@
+func main() begin
+        dynamic x <- [[1,2], [5, "a"]]
+        end
+        

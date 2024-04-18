@@ -1,0 +1,6 @@
+
+        func main() begin
+        dynamic y
+        y <- (y = 1) and (y or "world")
+        end
+        

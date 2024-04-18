@@ -1,0 +1,7 @@
+
+        func f(number a, number a)
+        func main() begin
+        end
+        func f(number a, number b[1]) begin
+        end
+        

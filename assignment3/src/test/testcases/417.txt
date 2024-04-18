@@ -1,0 +1,5 @@
+dynamic x
+        func main() begin
+        dynamic y <- x
+        end
+        

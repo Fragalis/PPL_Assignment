@@ -1,3 +1,6 @@
 func main() begin
+        bool b <- true and true
+        number a <- 1 + b
+        string c <- "hello" ... "world"
         end
         

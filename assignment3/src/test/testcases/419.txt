@@ -1,0 +1,6 @@
+
+        func main() begin
+        dynamic y
+        dynamic y <- 1
+        end
+        

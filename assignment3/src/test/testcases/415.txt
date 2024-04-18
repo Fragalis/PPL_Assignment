@@ -1,5 +1,4 @@
 func main() begin
-        dynamic x
-        x <- x + 1
+        dynamic x <- 1 + x
         end
         

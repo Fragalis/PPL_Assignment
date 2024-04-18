@@ -1,0 +1,9 @@
+
+        func f1(number a, number b[1,1])
+        func f2(number a, number b[1,1])
+        func main()
+        func f2(number a, number b[1,1]) begin
+        end
+        func f1(number a, number b[1,1]) begin
+        end
+        

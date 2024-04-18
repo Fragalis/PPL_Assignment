@@ -1,0 +1,6 @@
+dynamic x
+        func main() begin
+        dynamic y <- x + 1
+        x <- y = 12
+        end
+        

@@ -1,5 +1,5 @@
 func main() begin
-        number a <- 1
-        bool a <- true
+        dynamic x
+        x <- x ... "hello"
         end
         

@@ -34,12 +34,12 @@ class StaticChecker(BaseVisitor, Utils):
     def __init__(self, ctx):
         self.ctx = ctx
         self.symtab = [[
-            Func("readNumber", [], NumberType()),
-            Func("readBool", [], BoolType()),
-            Func("readString", [], StringType()),
-            Func("writeNumber", [Var("arg", NumberType())], VoidType()),
-            Func("writeBool", [Var("arg", BoolType())], VoidType()),
-            Func("writeString", [Var("arg", StringType())], VoidType()),
+            Func("readNumber", [], NumberType(), []),
+            Func("readBool", [], BoolType(), []),
+            Func("readString", [], StringType(), []),
+            Func("writeNumber", [Var("arg", NumberType())], VoidType(), []),
+            Func("writeBool", [Var("arg", BoolType())], VoidType(), []),
+            Func("writeString", [Var("arg", StringType())], VoidType(), []),
         ]]
         self.currentVariable = None
         self.noEntryPoint = True
@@ -120,6 +120,7 @@ class StaticChecker(BaseVisitor, Utils):
 
         self.currentVariable = ctx.name.name
         l_type = ctx.varType
+        # if initialized value
         if ctx.varInit is not None:
             r_type = self.visit(ctx.varInit, symtab)
             # L AND R
@@ -155,9 +156,9 @@ class StaticChecker(BaseVisitor, Utils):
                 # NOT L AND R
                 else:
                     symtab[0] += [Var(ctx.name.name, r_type)]
-        # DYNAMIC
+        # if not
         else:
-            symtab[0] += [Var(ctx.name.name, None)]
+            symtab[0] += [Var(ctx.name.name, l_type)]
         self.arrayLiteral = []
         self.currentVariable = None
 
@@ -180,9 +181,9 @@ class StaticChecker(BaseVisitor, Utils):
 
         # if Prototype
         if ctx.body is None:
-            if self.isCalled == False:
+            if self.isCalled == False and ctx not in self.noBodyFunction:
                 self.noBodyFunction += [ctx]
-            symtab[-1] += [Func(ctx.name.name, params, None, None)]
+                symtab[-1] += [Func(ctx.name.name, params, None, None)]
         # if not Prototype
         else:
             self.currentFunction = ctx.name.name
@@ -190,40 +191,44 @@ class StaticChecker(BaseVisitor, Utils):
                 if f.name.name == ctx.name.name:
                     self.noBodyFunction.remove(f)
  
-        # Function check
-        func_found = False
-        for idx in range(len(symtab[-1])):
-            func_sym = symtab[-1][idx]
-            # If function found
-            if type(func_sym) is Func and func_sym.name == ctx.name.name:
-                func_found = True
-                # If the number of params not match
-                if len(func_sym.param) != len(params):
-                    raise Redeclared(Function(), ctx.name.name)
-                # If param type doesn't match
-                for param_idx in range(len(params)):
-                    l_type = func_sym.param[param_idx].typ
-                    r_type = params[param_idx].typ
-                    # if unmatch scalar type
-                    if type(l_type) is not type(r_type):
+            # Function check
+            func_found = False
+            for idx in range(len(symtab[-1])):
+                func_sym = symtab[-1][idx]
+                # If function found
+                if type(func_sym) is Func and func_sym.name == ctx.name.name:
+                    func_found = True
+                    # If it has a body: 
+                    if func_sym.body is not None:
                         raise Redeclared(Function(), ctx.name.name)
-                    # if both are array type
-                    if type(l_type) is ArrayType and (l_type.size != r_type.size or type(r_type.eleType) is not type(l_type.eleType)):
-                            raise TypeMismatchInStatement(ctx)
-                # If here means it's the same function
+                    # If the number of params not match
+                    if len(func_sym.param) != len(params):
+                        raise Redeclared(Function(), ctx.name.name)
+                    # If param type doesn't match
+                    for param_idx in range(len(params)):
+                        l_type = func_sym.param[param_idx].typ
+                        r_type = params[param_idx].typ
+                        # if unmatch scalar type
+                        if type(l_type) is not type(r_type):
+                            raise Redeclared(Function(), ctx.name.name)
+                        # if both are array type
+                        if type(l_type) is ArrayType and (l_type.size != r_type.size or type(r_type.eleType) is not type(l_type.eleType)):
+                                raise TypeMismatchInStatement(ctx)
+                    # If here means it's the same function
+                    self.visit(ctx.body, symtab)
+                    # return type
+                    func_sym.typ = self.returnType if self.returnType else (VoidType() if self.returnList == [] else None)
+                    func_sym.body = ctx.body
+                    symtab[-1][idx] = func_sym
+                    break    
+            
+            # if first declaration:
+            if not func_found:
+                symtab[-1] += [Func(ctx.name.name, params, self.returnType, ctx.body)]
                 self.visit(ctx.body, symtab)
-                # return type
-                func_sym.typ = self.returnType if self.returnType else (VoidType() if self.returnList == [] else None)
-                symtab[-1][idx] = func_sym
-                break    
-        
-        # if first declaration:
-        if not func_found:
-            symtab[-1] += [Func(ctx.name.name, params, self.returnType, ctx.body)]
-            self.visit(ctx.body, symtab)
-            ret_type = self.returnType if self.returnType else (VoidType() if self.returnList == [] else None)
-            if symtab[-1][-1].typ is None:
-                symtab[-1][-1] = Func(ctx.name.name, params, ret_type, ctx.body)
+                ret_type = self.returnType if self.returnType else (VoidType() if self.returnList == [] else None)
+                if symtab[-1][-1].typ is None:
+                    symtab[-1][-1] = Func(ctx.name.name, params, ret_type, ctx.body)
         self.returnType = None
         self.hasReturn = False
         symtab = symtab[1:]
@@ -251,58 +256,58 @@ class StaticChecker(BaseVisitor, Utils):
         r_type = self.visit(ctx.right, symtab)
         if ctx.op in ['+', '-', "*", "/", "%", "=", "!=", "<", ">", "<=", ">="]:
             if l_type is None:
-                if type(ctx.left) in [Id, CallExpr]:
-                    self.infer(ctx.left, NumberType(), symtab)
-                    if self.inferred == False:
-                        return None
-                    l_type = NumberType()
-                return None
+                if type(ctx.left) not in [Id, CallExpr]:
+                    return None
+                self.infer(ctx.left, NumberType(), symtab)
+                if self.inferred == False:
+                    return None
+                l_type = NumberType()
             if r_type is None:
-                if type(ctx.right) in [Id, CallExpr]:
-                    self.infer(ctx.right, NumberType(), symtab)
-                    if self.inferred == False:
-                        return None
-                    r_type = NumberType()
-                return None
-            if type(l_type) is not NumberType() or type(r_type) is not NumberType():
+                if type(ctx.right) not in [Id, CallExpr]:
+                    return None
+                self.infer(ctx.right, NumberType(), symtab)
+                if self.inferred == False:
+                    return None
+                r_type = NumberType()
+            if type(l_type) is not NumberType or type(r_type) is not NumberType:
                 raise TypeMismatchInExpression(ctx)
             return NumberType() if ctx.op in ['+', '-', "*", "/", "%"] else BoolType()
 
         elif ctx.op in ["and", "or"]:
             if l_type is None:
-                if type(ctx.left) in [Id, CallExpr]:
-                    self.infer(ctx.left, BoolType(), symtab)
-                    if self.inferred == False:
-                        return None
-                    l_type = BoolType()
-                return None
+                if type(ctx.left) not in [Id, CallExpr]:
+                    return None
+                self.infer(ctx.left, BoolType(), symtab)
+                if self.inferred == False:
+                    return None
+                l_type = BoolType()
             if r_type is None:
-                if type(ctx.right) in [Id, CallExpr]:
-                    self.infer(ctx.right, BoolType(), symtab)
-                    if self.inferred == False:
-                        return None
-                    r_type = BoolType()
-                return None
-            if type(l_type) is not BoolType() or type(r_type) is not BoolType():
+                if type(ctx.right) not in [Id, CallExpr]:
+                    return None
+                self.infer(ctx.right, BoolType(), symtab)
+                if self.inferred == False:
+                    return None
+                r_type = BoolType()
+            if type(l_type) is not BoolType or type(r_type) is not BoolType:
                 raise TypeMismatchInExpression(ctx)
             return BoolType()
         
         else:
             if l_type is None:
-                if type(ctx.left) in [Id, CallExpr]:
-                    self.infer(ctx.left, StringType(), symtab)
-                    if self.inferred == False:
-                        return None
-                    l_type = StringType()
-                return None
+                if type(ctx.left) not in [Id, CallExpr]:
+                    return None
+                self.infer(ctx.left, StringType(), symtab)
+                if self.inferred == False:
+                    return None
+                l_type = StringType()
             if r_type is None:
-                if type(ctx.right) in [Id, CallExpr]:
-                    self.infer(ctx.right, StringType(), symtab)
-                    if self.inferred == False:
-                        return None
-                    r_type = StringType()
-                return None
-            if type(l_type) is not StringType() or type(r_type) is not StringType():
+                if type(ctx.right) not in [Id, CallExpr]:
+                    return None
+                self.infer(ctx.right, StringType(), symtab)
+                if self.inferred == False:
+                    return None
+                r_type = StringType()
+            if type(l_type) is not StringType or type(r_type) is not StringType:
                 raise TypeMismatchInExpression(ctx)
             return StringType() if ctx.op == "..." else BoolType()
         

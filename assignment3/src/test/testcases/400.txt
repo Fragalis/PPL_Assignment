@@ -1,2 +1,6 @@
-number a
+func main() begin
+        number a <- 1 + 1
+        bool b <- true and true
+        string c <- "hello" ... "world"
+        end
         

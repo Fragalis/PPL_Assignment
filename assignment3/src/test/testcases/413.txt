@@ -1,0 +1,6 @@
+func main() begin
+        var x <- [readNumber()]
+        dynamic y <- [x]
+        number z[1,1] <- y
+        end
+        

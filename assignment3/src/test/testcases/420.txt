@@ -1,0 +1,7 @@
+
+        func f()
+        func main() begin
+        end
+        func f() begin
+        end
+        
