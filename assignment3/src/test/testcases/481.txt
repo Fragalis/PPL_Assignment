@@ -1,0 +1,11 @@
+
+        dynamic d
+        func foo()
+        func main() begin
+            dynamic a
+            a[1] <- d[0] and true
+        end
+        func foo() begin
+            return d[1]
+        end
+        

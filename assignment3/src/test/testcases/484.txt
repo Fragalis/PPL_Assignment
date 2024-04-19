@@ -1,0 +1,7 @@
+
+        func main() begin
+            number a[4,4]
+            dynamic b
+            a[4] <- [b]
+        end
+        

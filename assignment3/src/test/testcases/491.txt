@@ -1,0 +1,21 @@
+
+        func someRandomNumber()
+        func gen(number arr[10,10], number idx) begin
+            var i <- 0
+            for i until i >= 10 by 1 begin
+                var j <- 0
+                for j until j >= 10 by 1 begin
+                    arr[i,j] <- someRandomNumber()
+                end
+            end
+            return arr[idx]
+        end
+        func main() begin
+            dynamic list
+            var i <- 0
+            for i until i >= 10 by 1 begin
+                writeNumber(gen(list, i)[i])
+            end
+        end
+        func someRandomNumber() return 1
+        

@@ -1,0 +1,9 @@
+
+        func foo()
+        func main() begin
+            dynamic a <- foo()
+        end
+        func foo() begin
+            return
+        end
+        

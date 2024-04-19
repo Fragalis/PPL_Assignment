@@ -23,7 +23,6 @@ declaration_list
 declaration
 	:	variable_declaration
 	|	function_declaration
-	|	function_full_declaration
 	;
 
 // PARSER:
@@ -56,7 +55,6 @@ array_literal_prime
 
 array_literal
 	:	expression
-	|	array_value
 	;
 
 identifier

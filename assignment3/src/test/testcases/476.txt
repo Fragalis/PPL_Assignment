@@ -1,0 +1,6 @@
+
+        func f() return 1
+        func main() begin
+        var x <- f
+        end
+        

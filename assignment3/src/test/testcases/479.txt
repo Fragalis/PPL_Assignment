@@ -1,0 +1,14 @@
+
+        func hello(number a)
+        begin
+        end
+        
+        func main()
+        begin
+            dynamic a 
+            dynamic b <- [[1,2,3], a]
+            number c <- a[0]
+            number d <- a
+        end
+        
+        

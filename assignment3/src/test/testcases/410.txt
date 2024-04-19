@@ -1,5 +1,5 @@
 func main() begin
-        dynamic x
-        x <- x and true
+        dynamic a
+        dynamic x <- a == (a+2)
         end
         

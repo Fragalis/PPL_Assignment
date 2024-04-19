@@ -1,0 +1,8 @@
+
+        func foo(number a) begin
+            if (a > 0) return "aa"
+            elif (a > 2) return true
+            return
+        end
+        func main() return
+        

@@ -41,7 +41,6 @@ class StaticChecker(BaseVisitor, Utils):
             Func("writeBool", [Var("arg", BoolType())], VoidType(), []),
             Func("writeString", [Var("arg", StringType())], VoidType(), []),
         ]]
-        self.currentVariable = None
         self.noEntryPoint = True
         self.isCalled = False
         self.inferred = False
@@ -59,10 +58,12 @@ class StaticChecker(BaseVisitor, Utils):
                 id_sym = self.lookup(expr.name, sym, lambda x: x.name)
                 if id_sym is not None and type(id_sym) is Var:
                     id_sym.typ = typ
+                    self.inferred = True
                     return
                     
         elif type(expr) in [CallStmt, CallExpr]:
-            for func_sym in symtab[-1]:
+            for idx in range(len(symtab[-1])):
+                func_sym = symtab[-1][idx]
                 if type(func_sym) is Func and func_sym.name == expr.name.name and func_sym.typ is None:
                     func_sym.typ = typ
                     self.isCalled = True
@@ -75,17 +76,36 @@ class StaticChecker(BaseVisitor, Utils):
                         symtab
                     )
                     self.isCalled = False
+                    symtab[-1][idx] = func_sym
+                    self.inferred = True
                     return
+                
+        elif type(expr) is ArrayCell:
+            self.inferred = True
+            if type(typ) is not ArrayType:
+                self.infer(expr.arr, ArrayType([1] * len(expr.idx), typ), symtab)
+            else:
+                self.infer(expr.arr, ArrayType([1] * len(expr.idx) + typ.size, typ.eleType), symtab)                
         
         else:
             if type(typ) is not ArrayType:
                 self.inferred = False
+                return
             else:
+                self.inferred = True
+                # Infer elements
                 for val in expr.value:
                     if len(typ.size) == 1:
                         self.infer(val, typ.eleType, symtab)
                     else:
                         self.infer(val, ArrayType(typ.size[1:], typ.eleType), symtab)
+                # Element check
+                typ_check = expr.value[0]
+                for val in expr.value:
+                    if type(typ_check) is not type(val):
+                        raise TypeMismatchInExpression(expr)
+                    if type(typ_check) is ArrayType and (typ_check.size != val.size or type(typ_check.eleType) is not type(val.eleType)):
+                        raise TypeMismatchInExpression(expr)
                 
     def check(self):
         self.visitProgram(self.ctx, self.symtab)
@@ -120,9 +140,9 @@ class StaticChecker(BaseVisitor, Utils):
         var = self.lookup(ctx.name.name, symtab[0], lambda x: x.name)
         if var is not None and type(var) is Var:
             raise Redeclared(Variable(), ctx.name.name)
-
-        self.currentVariable = ctx.name.name
+        
         l_type = ctx.varType
+        symtab[0] += [Var(ctx.name.name, l_type)]
         # if initialized value
         if ctx.varInit is not None:
             r_type = self.visit(ctx.varInit, symtab)
@@ -140,7 +160,6 @@ class StaticChecker(BaseVisitor, Utils):
                     else:
                         if type(r_type.eleType) is not type(l_type.eleType):
                             raise TypeMismatchInStatement(ctx)
-                symtab[0] += [Var(ctx.name.name, l_type)]
                 
             else:
                 if r_type is None:
@@ -149,21 +168,18 @@ class StaticChecker(BaseVisitor, Utils):
                         raise TypeCannotBeInferred(ctx)
                     # L AND NOT R
                     else:
-                        if type(ctx.varInit) in [Id, CallExpr, ArrayLiteral]:
+                        if type(ctx.varInit) in [Id, CallExpr, ArrayLiteral, ArrayCell]:
                             self.infer(ctx.varInit, l_type, symtab)
                             if self.inferred == False:
                                 raise TypeCannotBeInferred(ctx)
-                            symtab[0] += [Var(ctx.name.name, l_type)]
                         else:
                             raise TypeCannotBeInferred(ctx)
                 # NOT L AND R
                 else:
-                    symtab[0] += [Var(ctx.name.name, r_type)]
-        # if not
-        else:
-            symtab[0] += [Var(ctx.name.name, l_type)]
+                    for varsym in symtab[0]:
+                        if varsym.name == ctx.name.name and type(varsym) is Var:
+                            varsym.typ = r_type
         self.arrayLiteral = []
-        self.currentVariable = None
 
     # name: Id
     # param: List[VarDecl]  # empty list if there is no parameter
@@ -259,14 +275,14 @@ class StaticChecker(BaseVisitor, Utils):
         r_type = self.visit(ctx.right, symtab)
         if ctx.op in ['+', '-', "*", "/", "%", "=", "!=", "<", ">", "<=", ">="]:
             if l_type is None:
-                if type(ctx.left) not in [Id, CallExpr]:
+                if type(ctx.left) not in [Id, CallExpr, ArrayCell]:
                     return None
                 self.infer(ctx.left, NumberType(), symtab)
                 if self.inferred == False:
                     return None
                 l_type = NumberType()
             if r_type is None:
-                if type(ctx.right) not in [Id, CallExpr]:
+                if type(ctx.right) not in [Id, CallExpr, ArrayCell]:
                     return None
                 self.infer(ctx.right, NumberType(), symtab)
                 if self.inferred == False:
@@ -278,14 +294,14 @@ class StaticChecker(BaseVisitor, Utils):
 
         elif ctx.op in ["and", "or"]:
             if l_type is None:
-                if type(ctx.left) not in [Id, CallExpr]:
+                if type(ctx.left) not in [Id, CallExpr, ArrayCell]:
                     return None
                 self.infer(ctx.left, BoolType(), symtab)
                 if self.inferred == False:
                     return None
                 l_type = BoolType()
             if r_type is None:
-                if type(ctx.right) not in [Id, CallExpr]:
+                if type(ctx.right) not in [Id, CallExpr, ArrayCell]:
                     return None
                 self.infer(ctx.right, BoolType(), symtab)
                 if self.inferred == False:
@@ -297,14 +313,14 @@ class StaticChecker(BaseVisitor, Utils):
         
         else:
             if l_type is None:
-                if type(ctx.left) not in [Id, CallExpr]:
+                if type(ctx.left) not in [Id, CallExpr, ArrayCell]:
                     return None
                 self.infer(ctx.left, StringType(), symtab)
                 if self.inferred == False:
                     return None
                 l_type = StringType()
             if r_type is None:
-                if type(ctx.right) not in [Id, CallExpr]:
+                if type(ctx.right) not in [Id, CallExpr, ArrayCell]:
                     return None
                 self.infer(ctx.right, StringType(), symtab)
                 if self.inferred == False:
@@ -323,7 +339,7 @@ class StaticChecker(BaseVisitor, Utils):
             # if no type => infer is needed
             if expr_type is None:
                 # if operand is ArrayCell
-                if type(ctx.operand) not in [Id, CallExpr]:
+                if type(ctx.operand) not in [Id, CallExpr, ArrayCell]:
                     return None
                 # if it's Id / CallExpr
                 self.infer(ctx.operand, NumberType(), symtab)
@@ -342,7 +358,7 @@ class StaticChecker(BaseVisitor, Utils):
             # if no type => infer is needed
             if expr_type is None:
                 # if operand is ArrayCell
-                if type(ctx.operand) not in [Id, CallExpr]:
+                if type(ctx.operand) not in [Id, CallExpr, ArrayCell]:
                     return None
                 # if it's Id / CallExpr
                 self.infer(ctx.operand, BoolType(), symtab)
@@ -359,10 +375,10 @@ class StaticChecker(BaseVisitor, Utils):
     # name: Id
     # args: List[Expr]
     def visitCallExpr(self, ctx:CallExpr, symtab):
-        if self.currentVariable is not None and ctx.name.name == self.currentVariable:
+        if self.currentFunction is not None and ctx.name.name == self.currentFunction:
             raise TypeMismatchInExpression(ctx)
         
-        self.inferred = True
+        self.inferred = False
         local_symtab = symtab[:-1]
         for para in local_symtab:
             if self.lookup(ctx.name.name, para, lambda x: x.name) is not None:
@@ -405,11 +421,8 @@ class StaticChecker(BaseVisitor, Utils):
                 
     # name: str
     def visitId(self, ctx:Id, symtab):
-        if self.currentVariable is not None and ctx.name == self.currentVariable:
-            raise Undeclared(Identifier(), ctx.name)
-        
-        self.inferred = True
         # Find Id in the symtab
+        self.inferred = False
         for sym in symtab:
             varsym = self.lookup(ctx.name, sym, lambda x: x.name)
             # if Id is found
@@ -544,13 +557,15 @@ class StaticChecker(BaseVisitor, Utils):
             return
         # the function has a return statement
         self.hasReturn = True
+        func = self.lookup(self.currentFunction, symtab[-1], lambda x: x.name)
         # if VoidType()
         if ctx.expr is None:
+            if func.typ is not None:
+                raise TypeMismatchInStatement(ctx)
             self.returnType = VoidType()
         # if type
         else:    
-            ret_type =  self.visit(ctx.expr, symtab)
-            func = self.lookup(self.currentFunction, symtab[-1], lambda x: x.name)
+            ret_type = self.visit(ctx.expr, symtab)
             if func.typ is None:
                 if ret_type is None:
                     if self.inferred == False:
@@ -603,19 +618,19 @@ class StaticChecker(BaseVisitor, Utils):
         if r_type is None and l_type is None:
             raise TypeCannotBeInferred(ctx)
         if r_type is not None and l_type is None:
-            if type(ctx.lhs) is not Id:
+            if type(ctx.lhs) not in [Id, ArrayCell]:
                 raise TypeCannotBeInferred(ctx)
             self.infer(ctx.lhs, r_type, symtab)
             if not self.inferred:
                 raise TypeCannotBeInferred(ctx)
         elif r_type is None and l_type is not None:
-            if type(ctx.rhs) not in [Id, CallExpr, ArrayLiteral]:
+            if type(ctx.rhs) not in [Id, CallExpr, ArrayLiteral, ArrayCell]:
                 raise TypeCannotBeInferred(ctx)
             self.infer(ctx.rhs, l_type, symtab)
             if not self.inferred:
                 raise TypeCannotBeInferred(ctx)
         else:
-            if type(l_type) is VoidType:
+            if type(r_type) is VoidType:
                 raise TypeMismatchInStatement(ctx)
             if (type(l_type) is not type(r_type)):
                 raise TypeMismatchInStatement(ctx)
@@ -637,7 +652,7 @@ class StaticChecker(BaseVisitor, Utils):
     # name: Id
     # args: List[Expr]  # empty list if there is no argument
     def visitCallStmt(self, ctx:CallStmt, symtab):
-        self.inferred = True
+        self.inferred = False
         local_symtab = symtab[:-1]
         for para in local_symtab:
             if self.lookup(ctx.name.name, para, lambda x: x.name) is not None:
@@ -704,25 +719,25 @@ class StaticChecker(BaseVisitor, Utils):
         if typ is not None:
             for val in ctx.value:
                 val_typ = self.visit(val, symtab)
-                if typ is None:
-                    if type(val_typ) in [Id, CallExpr, ArrayLiteral]:
-                        self.infer(val_typ, typ, symtab)
-                        if self.inferred == False:
-                            return None
-                        val_typ = typ
-                    return None
+                if val_typ is None:
+                    if type(val) not in [Id, CallExpr, ArrayLiteral]:
+                        return None
+                    self.infer(val, typ, symtab)
+                    if self.inferred == False:
+                        return None
+                    val_typ = typ
                 if type(val_typ) is not type(typ):
                     raise TypeMismatchInExpression(self.arrayLiteral[0])
                 if type(val_typ) is ArrayType:
                     if val_typ.size[:len(typ.size)] != typ.size:
                         raise TypeMismatchInExpression(self.arrayLiteral[0])
                     if val_typ.eleType is None:
-                        if type(ctx.value) in [Id, CallExpr, ArrayLiteral]:
-                            self.infer(ctx.value, typ, symtab)
-                            if self.inferred == False:
-                                return None
-                            val_typ = typ
-                        return None
+                        if type(ctx.value) not in [Id, CallExpr, ArrayLiteral]:
+                            return None
+                        self.infer(ctx.value, typ, symtab)
+                        if self.inferred == False:
+                            return None
+                        val_typ = typ
                     if type(val_typ.eleType) is not type(typ.eleType) or val_typ.size != typ.size:
                         raise TypeMismatchInExpression(self.arrayLiteral[0])
         

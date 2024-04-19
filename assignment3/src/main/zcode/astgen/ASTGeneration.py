@@ -26,15 +26,12 @@ class ASTGeneration(ZCodeVisitor):
 # declaration
 # 	:	variable_declaration
 # 	|	function_declaration
-# 	|	function_full_declaration
 # 	;
     def visitDeclaration(self, ctx:ZCodeParser.DeclarationContext):
         if ctx.variable_declaration():
             return self.visit(ctx.variable_declaration())
         if ctx.function_declaration():
             return self.visit(ctx.function_declaration())
-        if ctx.function_full_declaration():
-            return self.visit(ctx.function_full_declaration())
 
 # primitive_type
 # 	:	NUMBER
@@ -82,10 +79,9 @@ class ASTGeneration(ZCodeVisitor):
 
 # array_literal
 # 	:	expression
-# 	|	array_value
 # 	;
     def visitArray_literal(self, ctx:ZCodeParser.Array_literalContext):
-        return self.visit(ctx.expression()) if ctx.expression() else self.visit(ctx.array_value())
+        return self.visit(ctx.expression())
 
 # identifier
 # 	:	IDENTIFIER

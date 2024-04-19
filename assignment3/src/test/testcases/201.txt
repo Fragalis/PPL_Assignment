@@ -1,4 +1,5 @@
-func main () begin
-        dynamic a <- [1]
-        end
+        
+        dynamic a
+        a <- [[1, 2], [3, true]]
+        func main() return
         

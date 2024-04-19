@@ -1,0 +1,17 @@
+
+        dynamic list
+        func extract(number m[10,10], number i)
+        func main() begin
+            dynamic m
+            dynamic x
+            dynamic idx
+            dynamic i
+            for i until x and (i = 10) by idx begin
+                extract(m, i - idx)
+                writeNumber(list[idx])
+            end
+        end
+        func extract(number mat[10,10], number idx) begin
+            list <- mat[idx]
+        end
+        

@@ -1,0 +1,11 @@
+
+        func hello(number a)
+        begin
+        end
+        func main()
+        begin
+            dynamic b
+            hello(b)
+            number c <- b + 1
+        end
+        

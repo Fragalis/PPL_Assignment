@@ -1,0 +1,6 @@
+
+        dynamic a
+        func main() begin
+        a <- [[1, 2], [3, true]]
+        end
+        

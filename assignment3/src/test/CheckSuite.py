@@ -106,17 +106,17 @@ class CheckSuite(unittest.TestCase):
         
     def test_simple_vardecl_5(self):
         input = """func main() begin
-        dynamic x
-        x <- x and true
+        dynamic a
+        dynamic x <- a == (a+2)
         end
         """
-        expect = ""
+        expect = "Type Mismatch In Expression: BinaryOp(==, Id(a), BinaryOp(+, Id(a), NumLit(2.0)))))"
         self.assertTrue(TestChecker.test(input, expect, 410))
         
     def test_simple_vardecl_6(self):
         input = """func main() begin
-        dynamic x
-        x <- x ... "hello"
+        dynamic b
+        var a <- b + 1
         end
         """
         expect = ""
@@ -154,7 +154,7 @@ class CheckSuite(unittest.TestCase):
         dynamic x <- 1 + x
         end
         """
-        expect = "Undeclared Identifier: x)"
+        expect = ""
         self.assertTrue(TestChecker.test(input, expect, 415))
         
     def test_simple_vardecl_11(self):
@@ -748,3 +748,436 @@ class CheckSuite(unittest.TestCase):
         """
         expect = "Type Mismatch In Statement: CallStmt(Id(f), [Id(x), Id(x)])"
         self.assertTrue(TestChecker.test(input, expect, 459))
+        
+    def test_infer_0(self):
+        input = """
+        func main() begin
+            dynamic x
+            if (x = 1)
+                x <- 2
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 460))
+        
+    def test_infer_1(self):
+        input = """
+        dynamic a
+        string x <- [a]
+        func main() return
+        """
+        expect = "Type Cannot Be Inferred: VarDecl(Id(x), StringType, None, ArrayLit(Id(a)))"
+        self.assertTrue(TestChecker.test(input, expect, 461))
+        
+    def test_infer_2(self):
+        input = """
+        dynamic a
+        string x[1] <- [a]
+        func main() return
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 462))
+        
+    def test_infer_3(self):
+        input = """
+        dynamic a
+        dynamic x <- a == (a+2)
+        func main() return
+        """
+        expect = "Type Mismatch In Expression: BinaryOp(==, Id(a), BinaryOp(+, Id(a), NumLit(2.0)))))"
+        self.assertTrue(TestChecker.test(input, expect, 463))
+        
+    def test_infer_4(self):
+        input = """
+        func main()
+        begin
+        dynamic a
+        var x <- a[0]
+        end
+        """
+        expect = "Type Cannot Be Inferred: VarDecl(Id(x), None, var, ArrayCell(Id(a), [NumLit(0.0)]))"
+        self.assertTrue(TestChecker.test(input, expect, 464))
+        
+    def test_infer_5(self):
+        input = """
+        func main()
+        begin
+        dynamic x
+        dynamic y
+        number a[2] <- [x,y]
+        writeNumber(x)
+        writeNumber(y)
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 465))
+        
+    def test_infer_6(self):
+        input = """
+        func main()
+        func foo()
+        begin
+        number a <- main()
+        end
+        func main() return
+        """
+        expect = "Type Mismatch In Statement: Return()"
+        self.assertTrue(TestChecker.test(input, expect, 466))
+        
+    def test_infer_7(self):
+        input = """
+        func main()
+        begin 
+            dynamic a
+            dynamic b
+            dynamic c
+            number x[3,3] <- [a,b,c]
+            a <- [1,2,3]
+            b <- [4,5,6]
+            c <- [7,8,9]
+            writeNumber(a[0] + b[0] + c[0])
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 467))
+        
+    def test_infer_8(self):
+        input = """
+        func foo() begin
+            dynamic d
+            return d
+        end
+        func main() return
+        """
+        expect = "Type Cannot Be Inferred: Return(Id(d))"
+        self.assertTrue(TestChecker.test(input, expect, 468))
+
+    def test_infer_9(self):
+        input = """
+        dynamic a
+        func foo() return a
+        func main()
+        begin
+            number num <- foo()
+        end
+        """
+        expect = "Type Cannot Be Inferred: Return(Id(a))"
+        self.assertTrue(TestChecker.test(input, expect, 469))
+        
+    def test_infer_10(self):
+        input = """
+        func main()
+        begin
+            var a <- a
+        end
+        """
+        expect = "Type Cannot Be Inferred: VarDecl(Id(a), None, var, Id(a))"
+        self.assertTrue(TestChecker.test(input, expect, 470))
+        
+    def test_infer_11(self):
+        input = """
+        dynamic x
+        number a[2,2] <- [x,[x,x]]
+        func main() return
+        """
+        expect = "Type Mismatch In Expression: ArrayLit(Id(x), ArrayLit(Id(x), Id(x)))"
+        self.assertTrue(TestChecker.test(input, expect, 471))
+        
+    def test_infer_12(self):
+        input = """
+        dynamic a
+        func main() begin
+        a <- [[1, 2], [3, true]]
+        end
+        """
+        expect = "Type Mismatch In Expression: ArrayLit(NumLit(3.0), BooleanLit(True))"
+        self.assertTrue(TestChecker.test(input, expect, 472))
+        
+    def test_infer_13(self):
+        input = """
+        func foo(number a, number b)
+        func main()
+        begin
+            return 1 + foo(1, "str")
+        end
+        func foo(number a, number b)
+        begin
+            return 0
+        end
+        """
+        expect = "Type Mismatch In Expression: CallExpr(Id(foo), [NumLit(1.0), StringLit(str)])"
+        self.assertTrue(TestChecker.test(input, expect, 473))
+        
+    def test_infer_14(self):
+        input = """
+        func foo(number a, number b)
+        func main()
+        begin
+            dynamic a <- 1 + foo(1, 2)
+        end
+        func foo(number a, number b)
+        begin
+            return 0
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 474))
+        
+    def test_infer_15(self):
+        input = """
+        func foo(number a) begin
+            if (a > 0) return "aa"
+            elif (a > 2) return true
+            return
+        end
+        func main() return
+        """
+        expect = "Type Mismatch In Statement: Return(BooleanLit(True))"
+        self.assertTrue(TestChecker.test(input, expect, 475))
+        
+    def test_infer_16(self):
+        input = """
+        func f() return 1
+        func main() begin
+        var x <- f
+        end
+        """
+        expect = "Undeclared Identifier: f)"
+        self.assertTrue(TestChecker.test(input, expect, 476))
+        
+    def test_infer_17(self):
+        input = """
+        func main() begin
+        dynamic a
+        number b <- a[0]
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 477))
+        
+    def test_infer_18(self):
+        input = """
+        func main() begin
+        dynamic a
+        var b <- a[0]
+        end
+        """
+        expect = "Type Cannot Be Inferred: VarDecl(Id(b), None, var, ArrayCell(Id(a), [NumLit(0.0)]))"
+        self.assertTrue(TestChecker.test(input, expect, 478))
+        
+    def test_infer_19(self):
+        input = """
+        func hello(number a)
+        begin
+        end
+        
+        func main()
+        begin
+            dynamic a 
+            dynamic b <- [[1,2,3], a]
+            number c <- a[0]
+            number d <- a
+        end
+        
+        """
+        expect = "Type Mismatch In Statement: VarDecl(Id(d), NumberType, None, Id(a))"
+        self.assertTrue(TestChecker.test(input, expect, 479))
+        
+    def test_infer_20(self):
+        input = """
+        func main() begin
+        dynamic a
+        var b <- a[0] and true
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 480))       
+        
+    def test_infer_21(self):
+        input = """
+        dynamic d
+        func foo()
+        func main() begin
+            dynamic a
+            a[1] <- d[0] and true
+        end
+        func foo() begin
+            return d[1]
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 481))
+        
+    def test_infer_22(self):
+        input = """
+        dynamic d
+        func foo()
+        func main() begin
+            dynamic a <- [true]
+            a[1] <- d[0]
+        end
+        func foo() begin
+            return d[1]
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 482))    
+        
+    def test_infer_23(self):
+        input = """
+        func foo()
+        func main() begin
+            dynamic a <- foo()
+        end
+        func foo() begin
+            return
+        end
+        """
+        expect = "Type Cannot Be Inferred: VarDecl(Id(a), None, dynamic, CallExpr(Id(foo), []))"
+        self.assertTrue(TestChecker.test(input, expect, 483))
+        
+    def test_infer_24(self):
+        input = """
+        func main() begin
+            number a[4,4]
+            dynamic b
+            a[4] <- [b]
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 484))
+        
+    def test_infer_25(self):
+        input = """
+        func foo() begin
+            return [[1]]
+        end
+        func main() begin
+            dynamic x
+            dynamic y <- x[1]
+            x <- foo()[1]
+        end
+        """
+        expect = "Type Cannot Be Inferred: VarDecl(Id(y), None, dynamic, ArrayCell(Id(x), [NumLit(1.0)]))"
+        self.assertTrue(TestChecker.test(input, expect, 485))
+        
+    def test_infer_26(self):
+        input = """
+        func foo() begin
+            return [[1]]
+        end
+        func main() begin
+            dynamic x
+            x <- foo()[1]
+            dynamic y <- x[1]
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 486))
+        
+    def test_infer_27(self):
+        input = """
+        func hello(number a)
+        begin
+        end
+        func main()
+        begin
+            dynamic b
+            hello(b)
+            number c <- b + 1
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 487))
+        
+    def test_infer_28(self):
+        input = """
+        func foo(number x) return 1
+        func main()
+        begin
+            dynamic a
+            dynamic x
+            dynamic y <- a + foo(x)
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 488))
+        
+    def test_infer_29(self):
+        input = """
+        func f() begin
+        number c[3,2] <- [[6,7],[4,5],[4,5]]
+        return c[2]
+        end
+        func main() begin
+        dynamic a <- f()[1]
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 489))
+
+    def test_program_0(self):
+        input = """
+        func fib() begin
+            number c[10]
+            c[0] <- 1
+            c[1] <- 1
+            var i <- 2
+            for i until i >= 10 by 1 begin
+                c[i] <- c[i - 1] + c[i - 2]
+            end
+            return c
+        end
+        func main() begin
+            dynamic idx <- readNumber()
+            writeNumber(fib()[idx])
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 490))
+
+    def test_program_1(self):
+        input = """
+        func someRandomNumber()
+        func gen(number arr[10,10], number idx) begin
+            var i <- 0
+            for i until i >= 10 by 1 begin
+                var j <- 0
+                for j until j >= 10 by 1 begin
+                    arr[i,j] <- someRandomNumber()
+                end
+            end
+            return arr[idx]
+        end
+        func main() begin
+            dynamic list
+            var i <- 0
+            for i until i >= 10 by 1 begin
+                writeNumber(gen(list, i)[i])
+            end
+        end
+        func someRandomNumber() return 1
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 491))
+
+    def test_program_2(self):
+        input = """
+        dynamic list
+        func extract(number m[10,10], number i)
+        func main() begin
+            dynamic m
+            dynamic x
+            dynamic idx
+            dynamic i
+            for i until x and (i = 10) by idx begin
+                extract(m, i - idx)
+                writeNumber(list[idx])
+            end
+        end
+        func extract(number mat[10,10], number idx) begin
+            list <- mat[idx]
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 492))
