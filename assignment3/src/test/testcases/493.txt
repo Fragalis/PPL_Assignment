@@ -1,0 +1,17 @@
+
+        func finder(number array[100], number left, number right, number k) begin
+            if(left <= right) begin
+                var mid <- right + (left - right) / 2
+                if(array[mid] = k) return mid
+                if(array[mid] > k) return mid
+                if(array[mid] < k) return mid
+            end
+            return -1
+        end
+        func main() begin
+            dynamic arr
+            var index <- finder(arr,0,4,2)
+            if (index = -1) writeString("No")
+            else writeNumber(index)
+        end
+        

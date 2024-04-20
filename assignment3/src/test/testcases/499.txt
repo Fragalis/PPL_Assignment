@@ -1,0 +1,12 @@
+
+        dynamic x
+        func gen(number lst[5]) begin
+            x[0] <- lst
+            return
+        end
+        func main() begin
+            dynamic y
+            gen(y)
+            x <- gen(y)
+        end
+        

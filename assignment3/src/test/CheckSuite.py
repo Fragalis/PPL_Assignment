@@ -1181,3 +1181,115 @@ class CheckSuite(unittest.TestCase):
         """
         expect = ""
         self.assertTrue(TestChecker.test(input, expect, 492))
+
+    def test_program_3(self):
+        input = """
+        func finder(number array[100], number left, number right, number k) begin
+            if(left <= right) begin
+                var mid <- right + (left - right) / 2
+                if(array[mid] = k) return mid
+                if(array[mid] > k) return mid
+                if(array[mid] < k) return mid
+            end
+            return -1
+        end
+        func main() begin
+            dynamic arr
+            var index <- finder(arr,0,4,2)
+            if (index = -1) writeString("No")
+            else writeNumber(index)
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 493))
+
+    def test_program_4(self):
+        input = """
+        func isPrime(number x)
+        func main()
+        begin
+            var x <- readNumber()
+            if(isPrime(x)) writeString("Yes")
+            else writeString("No")
+        end
+        func isPrime(number x)
+        begin
+            if(x <= 1) return false
+            var i <- 2
+            for i until i > x/2 by 1
+            begin
+                if (x % i = 0) return false
+            end
+            return true
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 494))
+
+    def test_program_5(self):
+        input = """
+        func main() begin
+        ## Read Number
+            dynamic x <- readNumber()
+            dynamic sum
+            var i <- 0
+            for i until i > x by 1 begin
+                sum <- sum + i
+            end
+        writeNumber(sum)
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 495))
+        
+    def test_program_6(self):
+        input = """
+        func b(number b) return b
+        func a(number a) return b(a)
+        func c(number c) return c
+        func main() begin
+        var x <- a(1) and b(1)
+        end
+        """
+        expect = "Type Mismatch In Expression: BinaryOp(and, CallExpr(Id(a), [NumLit(1.0)]), CallExpr(Id(b), [NumLit(1.0)])))"
+        self.assertTrue(TestChecker.test(input, expect, 496))
+        
+    def test_program_7(self):
+        input = """
+        dynamic x <- [[1]]
+        func b(number b) return x[1]
+        func a(number a) return b(a)
+        func c(number c) return b(c)
+        func main() begin
+        dynamic x <- a(1)[1] + b(1)[1]
+        end
+        """
+        expect = ""
+        self.assertTrue(TestChecker.test(input, expect, 497))
+        
+    def test_program_8(self):
+        input = """
+        func main() begin
+            dynamic x
+            number a <- x[1]
+            x[1] <- writeBool(true)
+        end
+        """
+        expect = "Type Mismatch In Expression: CallExpr(Id(writeBool), [BooleanLit(True)])"
+        self.assertTrue(TestChecker.test(input, expect, 498))
+        
+    def test_program_9(self):
+        input = """
+        dynamic x
+        func gen(number lst[5]) begin
+            x[0] <- lst
+            return
+        end
+        func main() begin
+            dynamic y
+            gen(y)
+            x <- gen(y)
+        end
+        """
+        expect = "Type Mismatch In Expression: CallExpr(Id(gen), [Id(y)])"
+        self.assertTrue(TestChecker.test(input, expect, 499))

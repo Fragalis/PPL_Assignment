@@ -1,0 +1,8 @@
+
+        func b(number b) return b
+        func a(number a) return b(a)
+        func c(number c) return c
+        func main() begin
+        var x <- a(1) and b(1)
+        end
+        

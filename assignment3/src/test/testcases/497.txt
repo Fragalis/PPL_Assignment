@@ -1,0 +1,9 @@
+
+        dynamic x <- [[1]]
+        func b(number b) return x[1]
+        func a(number a) return b(a)
+        func c(number c) return b(c)
+        func main() begin
+        dynamic x <- a(1)[1] + b(1)[1]
+        end
+        
